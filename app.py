@@ -15,9 +15,19 @@ class GlobalDataSanitizer:
         if column_name in self.df.columns:
             self.df[column_name] = pd.to_datetime(self.df[column_name], errors='coerce').dt.strftime('%Y-%m-%d')
 
-st.set_page_config(page_title="Global Data Sanitizer & AI Assistant", layout="wide")
-st.title("🌐 Global Data Sanitizer & AI Enterprise Assistant")
-st.write("Zero Data Retention - Secure In-Memory Data Cleaning & Intelligent Guidance for Global Startups")
+st.set_page_config(page_title="Global Data Sanitizer & AI Enterprise Assistant", layout="wide")
+
+# Custom Styling for Enterprise SaaS UI
+st.markdown("""
+    <style>
+    .main-title { font-size: 2.2rem; font-weight: 700; color: #4A90E2; }
+    .sub-text { font-size: 1rem; color: #888888; margin-bottom: 20px; }
+    .ai-box { background-color: #1E222D; padding: 15px; border-radius: 10px; border-left: 4px solid #4A90E2; }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="main-title">🌐 Global Data Sanitizer & Multilingual AI Assistant</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-text">Zero Data Retention — Secure In-Memory Data Cleaning & Intelligent Guidance for Global Enterprises</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader(
     "Upload your CSV, Excel, or Text file", 
@@ -43,7 +53,7 @@ if uploaded_file is not None:
         
         sanitizer = GlobalDataSanitizer(df)
         
-        st.sidebar.header("Sanitization Options")
+        st.sidebar.header("⚙️ Sanitization Options")
         date_col = st.sidebar.selectbox("Select Date Column to Standardize", ["None"] + list(df.columns))
         curr_col = st.sidebar.selectbox("Select Currency/Numeric Column to Clean", ["None"] + list(df.columns))
         
@@ -65,23 +75,40 @@ if uploaded_file is not None:
                 mime="text/csv",
             )
             
-        # AI Assistant Section for Enterprise Guidance
+        # Multilingual AI Assistant Section
         st.markdown("---")
-        st.subheader("🤖 Smart AI Data Assistant & Guidance")
-        st.write("Aap apne data ke mutaliq koi bhi sawal yahan pooch sakti hain ya AI analysis dekh sakti hain:")
+        st.subheader("🤖 Smart Multilingual AI Data Assistant")
         
-        user_query = st.text_input("Ask AI Assistant about your dataset quality, missing rows, or formatting:")
+        # Default Welcome Message in English
+        st.info("👋 **Hello! I am your Global AI Data Assistant.** I can help you analyze dataset quality, inspect missing values, and audit sanitization rules. You can interact with me in **any language** (English, German, French, Spanish, Urdu, Japanese, Arabic, etc.).")
+        
+        user_query = st.text_input("Ask AI Assistant in any language (e.g., 'What changes were made?', 'Wie viele Spalten gibt es?', 'Données manquantes?'):")
+        
         if user_query:
             query_lower = user_query.lower()
-            if "missing" in query_lower or "null" in query_lower:
+            
+            # Smart Multilingual Intent Engine
+            if any(k in query_lower for k in ["change", "did", "sanitiz", "transform", "action", "wurde", "änderung", "changement", "cambios"]):
+                applied_actions = []
+                if date_col != "None":
+                    applied_actions.append(f"Standardized dates in column **'{date_col}'** to ISO format (`YYYY-MM-DD`).")
+                if curr_col != "None":
+                    applied_actions.append(f"Cleaned currency formatting in column **'{curr_col}'** by removing non-numeric characters.")
+                
+                if applied_actions:
+                    st.success("🤖 **AI Audit Result:**\n\n" + "\n\n".join(applied_actions))
+                else:
+                    st.warning("🤖 **AI Assistant:** No transformation options have been applied yet. Select target date or currency columns in the sidebar and click 'Sanitize Data'.")
+                    
+            elif any(k in query_lower for k in ["missing", "null", "fehlende", "manquant", "faltantes", "khali"]):
                 missing_info = df.isnull().sum().to_dict()
-                st.info(f"🤖 **AI Analysis:** Yeh lijiye aapke dataset ke missing values ki report: {missing_info}")
-            elif "column" in query_lower or "name" in query_lower:
-                st.info(f"🤖 **AI Analysis:** Aapke dataset mein kul {len(df.columns)} columns hain aur total rows {len(df)} hain.")
-            elif "format" in query_lower or "clean" in query_lower:
-                st.info("🤖 **AI Analysis:** Dataset international standards ke mutabiq format hone ke liye ready hai. Aap sidebar se date aur currency columns select karke 1-click mein clean kar sakti hain.")
+                st.info(f"🤖 **AI Data Quality Check:** Missing values per column: {missing_info}")
+                
+            elif any(k in query_lower for k in ["column", "shape", "row", "spalten", "zeilen", "colonnes", "filas", "kitne"]):
+                st.info(f"🤖 **AI Summary:** Dataset contains **{len(df)} rows** and **{len(df.columns)} columns** (`{', '.join(df.columns)}`).")
+                
             else:
-                st.info("🤖 **AI Assistant:** Main aapke data ko analyze kar raha hoon. Behtar results ke liye date standardization aur currency sanitization options zaroor apply karein!")
+                st.info(f"🤖 **AI Assistant:** I processed your query: *\"{user_query}\"*. Your dataset contains **{len(df)} rows** and is ready for international standard sanitization!")
                 
     except Exception as e:
         st.error(f"An error occurred while processing the file: {e}")
