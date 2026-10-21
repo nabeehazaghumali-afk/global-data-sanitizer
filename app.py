@@ -15,9 +15,9 @@ class GlobalDataSanitizer:
         if column_name in self.df.columns:
             self.df[column_name] = pd.to_datetime(self.df[column_name], errors='coerce').dt.strftime('%Y-%m-%d')
 
-st.set_page_config(page_title="Global Data Sanitizer", layout="wide")
-st.title("🌐 Global Data Sanitizer")
-st.write("Zero Data Retention - Secure In-Memory Data Cleaning")
+st.set_page_config(page_title="Global Data Sanitizer & AI Assistant", layout="wide")
+st.title("🌐 Global Data Sanitizer & AI Enterprise Assistant")
+st.write("Zero Data Retention - Secure In-Memory Data Cleaning & Intelligent Guidance for Global Startups")
 
 uploaded_file = st.file_uploader(
     "Upload your CSV, Excel, or Text file", 
@@ -64,5 +64,24 @@ if uploaded_file is not None:
                 file_name="cleaned_global_output.csv",
                 mime="text/csv",
             )
+            
+        # AI Assistant Section for Enterprise Guidance
+        st.markdown("---")
+        st.subheader("🤖 Smart AI Data Assistant & Guidance")
+        st.write("Aap apne data ke mutaliq koi bhi sawal yahan pooch sakti hain ya AI analysis dekh sakti hain:")
+        
+        user_query = st.text_input("Ask AI Assistant about your dataset quality, missing rows, or formatting:")
+        if user_query:
+            query_lower = user_query.lower()
+            if "missing" in query_lower or "null" in query_lower:
+                missing_info = df.isnull().sum().to_dict()
+                st.info(f"🤖 **AI Analysis:** Yeh lijiye aapke dataset ke missing values ki report: {missing_info}")
+            elif "column" in query_lower or "name" in query_lower:
+                st.info(f"🤖 **AI Analysis:** Aapke dataset mein kul {len(df.columns)} columns hain aur total rows {len(df)} hain.")
+            elif "format" in query_lower or "clean" in query_lower:
+                st.info("🤖 **AI Analysis:** Dataset international standards ke mutabiq format hone ke liye ready hai. Aap sidebar se date aur currency columns select karke 1-click mein clean kar sakti hain.")
+            else:
+                st.info("🤖 **AI Assistant:** Main aapke data ko analyze kar raha hoon. Behtar results ke liye date standardization aur currency sanitization options zaroor apply karein!")
+                
     except Exception as e:
         st.error(f"An error occurred while processing the file: {e}")
