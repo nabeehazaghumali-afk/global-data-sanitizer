@@ -157,5 +157,5 @@ print(sanitizer.df)
 #     except Exception as e:
 #         st.error(f"An error occurred while processing the file: {e}")
 
-!streamlit run app.py & npx localtunnel --port 8501
+
 
