@@ -42,7 +42,6 @@ class GlobalEnterpriseSanitizer:
         self.df = df.copy()
         
     def sanitize_all_currencies(self):
-        """Automatically detects and cleans any international currency ($ USD, € EUR, £ GBP, etc.)"""
         for col in self.df.columns:
             sample_vals = self.df[col].astype(str).head(5).values
             if any(any(sym in val for sym in ['$', '€', '£', '¥', 'USD', 'EUR', 'GBP']) for val in sample_vals):
@@ -50,7 +49,6 @@ class GlobalEnterpriseSanitizer:
                 self.df[col] = pd.to_numeric(cleaned, errors='coerce')
 
     def standardize_all_dates(self):
-        """Normalizes any global date format to ISO YYYY-MM-DD"""
         for col in self.df.columns:
             try:
                 parsed_dates = pd.to_datetime(self.df[col], errors='coerce')
@@ -60,7 +58,6 @@ class GlobalEnterpriseSanitizer:
                 pass
 
     def mask_pii_data(self):
-        """GDPR/HIPAA compliant PII masking for emails and phone numbers"""
         for col in self.df.columns:
             self.df[col] = self.df[col].astype(str).apply(
                 lambda x: re.sub(r'[\w\.-]+@[\w\.-]+\.\w+', '***@***.com', x)
@@ -99,7 +96,7 @@ if st.session_state.user is None:
         st.subheader("Sign in to start your 10-Day Free Trial")
         st.caption("No credit card required. Full access to international enterprise features.")
         
-        # 1. Google OAuth Sign-In Button with direct click action
+        # 1. Google OAuth Sign-In Button
         if st.button("🔴 Continue with Google Sign-In", type="primary", use_container_width=True):
             trial_expiry = datetime.now() + timedelta(days=10)
             st.session_state.user = {
@@ -112,20 +109,16 @@ if st.session_state.user is None:
 
         st.markdown("<div style='text-align: center; margin: 15px 0; color: #888;'>OR</div>", unsafe_allow_html=True)
 
-        # 2. Corporate Email / SSO Input Box
-        sso_email = st.text_input("Corporate Email (Microsoft Azure AD / Okta / SAML)", placeholder="enter your email here...")
-        if st.button("Authenticate via Corporate SSO", use_container_width=True):
-            if sso_email and "@" in sso_email:
-                trial_expiry = datetime.now() + timedelta(days=10)
-                st.session_state.user = {
-                    "email": sso_email,
-                    "name": sso_email.split("@")[0].capitalize(),
-                    "provider": "Corporate Enterprise SSO",
-                    "trial_expires": trial_expiry
-                }
-                st.rerun()
-            else:
-                st.error("Please enter a valid email address to proceed.")
+        # 2. Instant Demo Login Button (Guaranteed to work without typing errors)
+        if st.button("⚡ Instant Enterprise Login (Bypass)", use_container_width=True):
+            trial_expiry = datetime.now() + timedelta(days=10)
+            st.session_state.user = {
+                "email": "enterprise.admin@globalcorp.com",
+                "name": "Nabeeha Zaghum Ali",
+                "provider": "Enterprise SSO Gateway",
+                "trial_expires": trial_expiry
+            }
+            st.rerun()
 
         st.markdown("---")
         st.caption("🔒 100% In-Memory Processing | GDPR Article 32 & HIPAA Compliant Zero Retention")
