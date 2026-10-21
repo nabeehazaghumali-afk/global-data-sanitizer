@@ -82,7 +82,8 @@ if uploaded_file is not None:
         # Default Welcome Message in English
         st.info("👋 **Hello! I am your Global AI Data Assistant.** I can help you analyze dataset quality, inspect missing values, and audit sanitization rules. You can interact with me in **any language** (English, German, French, Spanish, Urdu, Japanese, Arabic, etc.).")
         
-        user_query = st.text_input("Ask AI Assistant in any language (e.g., 'What changes were made?', 'Wie viele Spalten gibt es?', 'Données manquantes?'):")
+        # Clean & Professional Placeholder Input
+        user_query = st.text_input("Ask AI Assistant (e.g., Query data changes, check missing values, dataset summary):")
         
         if user_query:
             query_lower = user_query.lower()
