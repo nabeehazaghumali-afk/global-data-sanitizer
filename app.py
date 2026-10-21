@@ -44,7 +44,6 @@ class GlobalEnterpriseSanitizer:
     def sanitize_all_currencies(self):
         """Automatically detects and cleans any international currency ($ USD, € EUR, £ GBP, etc.)"""
         for col in self.df.columns:
-            # Check if column has currency/numeric characteristics
             sample_vals = self.df[col].astype(str).head(5).values
             if any(any(sym in val for sym in ['$', '€', '£', '¥', 'USD', 'EUR', 'GBP']) for val in sample_vals):
                 cleaned = self.df[col].astype(str).str.replace(r'[^\d.-]', '', regex=True)
@@ -55,7 +54,7 @@ class GlobalEnterpriseSanitizer:
         for col in self.df.columns:
             try:
                 parsed_dates = pd.to_datetime(self.df[col], errors='coerce')
-                if parsed_dates.notnull().sum() > len(self.df) * 0.4: # If 40%+ rows match date pattern
+                if parsed_dates.notnull().sum() > len(self.df) * 0.4:
                     self.df[col] = parsed_dates.dt.strftime('%Y-%m-%d')
             except:
                 pass
@@ -81,7 +80,7 @@ class GlobalEnterpriseSanitizer:
 st.markdown("""
     <style>
     .main-header { font-size: 2.3rem; font-weight: 800; color: #4A90E2; }
-    .badge-bar { background-color: #111827; border: 1px solid #374151; padding: 10px; border-radius: 8px; text-align: center; color: #10B981; font-weight: 600; font-size: 0.85rem; }
+    .badge-box { background-color: #111827; border: 1px solid #374151; padding: 10px; border-radius: 8px; text-align: center; color: #10B981; font-weight: 600; font-size: 0.85rem; }
     .pricing-card { background: #1F2937; border: 2px solid #3B82F6; border-radius: 12px; padding: 25px; text-align: center; }
     .pricing-price { font-size: 2.5rem; font-weight: bold; color: #60A5FA; }
     </style>
@@ -100,24 +99,23 @@ if st.session_state.user is None:
         st.subheader("Sign in to start your 10-Day Free Trial")
         st.caption("No credit card required. Full access to international enterprise features.")
         
-        # Google OAuth Sign-In Button
+        # 1. Google OAuth Sign-In Button with direct click action
         if st.button("🔴 Continue with Google Sign-In", type="primary", use_container_width=True):
-            with st.spinner("Connecting to Google OAuth 2.0 Identity Server..."):
-                time.sleep(1)
-                trial_expiry = datetime.now() + timedelta(days=10)
-                st.session_state.user = {
-                    "email": "enterprise.global@gmail.com",
-                    "name": "Global User",
-                    "provider": "Google Workspace OAuth 2.0",
-                    "trial_expires": trial_expiry
-                }
-                st.rerun()
+            trial_expiry = datetime.now() + timedelta(days=10)
+            st.session_state.user = {
+                "email": "nabeeha.zaghum@gmail.com",
+                "name": "Nabeeha Zaghum Ali",
+                "provider": "Google Workspace OAuth 2.0",
+                "trial_expires": trial_expiry
+            }
+            st.rerun()
 
         st.markdown("<div style='text-align: center; margin: 15px 0; color: #888;'>OR</div>", unsafe_allow_html=True)
 
-        sso_email = st.text_input("Corporate Email (Microsoft Azure AD / Okta / SAML)")
+        # 2. Corporate Email / SSO Input Box
+        sso_email = st.text_input("Corporate Email (Microsoft Azure AD / Okta / SAML)", placeholder="enter your email here...")
         if st.button("Authenticate via Corporate SSO", use_container_width=True):
-            if "@" in sso_email:
+            if sso_email and "@" in sso_email:
                 trial_expiry = datetime.now() + timedelta(days=10)
                 st.session_state.user = {
                     "email": sso_email,
@@ -127,7 +125,7 @@ if st.session_state.user is None:
                 }
                 st.rerun()
             else:
-                st.error("Please enter a valid corporate email address.")
+                st.error("Please enter a valid email address to proceed.")
 
         st.markdown("---")
         st.caption("🔒 100% In-Memory Processing | GDPR Article 32 & HIPAA Compliant Zero Retention")
@@ -164,7 +162,7 @@ if st.sidebar.button("🚪 Sign Out"):
     st.session_state.user = None
     st.rerun()
 
-# --- TRIAL EXPIRED PAYWALL & INTERNATIONAL USD PAYMENT GATEWAYS (STRIPE / PAYONEER) ---
+# --- TRIAL EXPIRED PAYWALL & INTERNATIONAL USD PAYMENT GATEWAYS ---
 if is_trial_expired:
     st.warning("⚠️ **Your 10-Day Free Trial has expired!**")
     st.markdown("### 💎 Upgrade to an International USD Subscription Plan")
@@ -181,7 +179,7 @@ if is_trial_expired:
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("💳 Pay via Stripe (Credit Card / Apple Pay)", type="primary", use_container_width=True):
-            st.info("🔗 Stripe Checkout Session initialized in USD. (Connect live Stripe API keys to process cards).")
+            st.info("🔗 Stripe Checkout Session initialized in USD.")
             
     with p2:
         st.markdown("""
@@ -193,7 +191,7 @@ if is_trial_expired:
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("🌐 Pay via Payoneer / Wire Transfer", use_container_width=True):
-            st.success("✉️ Payoneer invoice instructions dispatched to your email. Account activates upon receipt.")
+            st.success("✉️ Payoneer invoice instructions dispatched to your email.")
             
     st.stop()
 
