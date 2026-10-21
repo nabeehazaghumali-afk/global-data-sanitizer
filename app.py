@@ -73,13 +73,75 @@ class GlobalEnterpriseSanitizer:
         nulls = self.df.isnull().sum().sum()
         return max(0, int(((total - nulls) / total) * 100))
 
-# --- UI STYLING ---
+# --- ULTRA-MODERN LUXURY UI STYLING ---
 st.markdown("""
     <style>
-    .main-header { font-size: 2.3rem; font-weight: 800; color: #4A90E2; }
-    .badge-box { background-color: #111827; border: 1px solid #374151; padding: 10px; border-radius: 8px; text-align: center; color: #10B981; font-weight: 600; font-size: 0.85rem; }
-    .pricing-card { background: #1F2937; border: 2px solid #3B82F6; border-radius: 12px; padding: 25px; text-align: center; }
-    .pricing-price { font-size: 2.5rem; font-weight: bold; color: #60A5FA; }
+    /* Main Background & Font Styling */
+    .stApp {
+        background: radial-gradient(circle at 50% 0%, #111827 0%, #0b0f19 100%);
+        color: #f3f4f6;
+    }
+    
+    /* Header Styling */
+    .main-header {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #60A5FA, #3B82F6, #10B981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0px;
+    }
+    
+    .sub-header {
+        color: #9CA3AF;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+
+    /* Glassmorphism Badge Cards */
+    .badge-box {
+        background: rgba(17, 24, 39, 0.7);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+        color: #34D399;
+        font-weight: 600;
+        font-size: 0.85rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Pricing Card Luxury Styling */
+    .pricing-card {
+        background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+        border: 2px solid rgba(59, 130, 246, 0.4);
+        border-radius: 16px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+    }
+    .pricing-card:hover {
+        transform: translateY(-5px);
+        border-color: #3B82F6;
+    }
+    .pricing-price {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #60A5FA;
+        margin: 15px 0;
+    }
+
+    /* Container Box Styling */
+    .st-emotion-cache-1r6slb0 {
+        background: rgba(31, 41, 55, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 14px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -89,8 +151,10 @@ if st.session_state.user is None:
     c1, col_box, c3 = st.columns([1, 1.8, 1])
     
     with col_box:
+        st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
         st.markdown("## 🌐 Global Data Sanitizer & Currency Suite")
         st.markdown("##### Multi-Currency Normalization, PII Masking & Zero-Retention SaaS")
+        st.markdown("</div>", unsafe_allow_html=True)
         st.divider()
         
         st.subheader("Sign in to start your 10-Day Free Trial")
@@ -130,14 +194,14 @@ days_left = max(0, (trial_end_time - current_time).days)
 
 # --- DASHBOARD HEADER ---
 st.markdown('<div class="main-header">🌐 Global Data Sanitizer & Currency Suite</div>', unsafe_allow_html=True)
-st.markdown("`Universal Multi-Currency Cleaning, Date Normalization, Column Mapping & Webhook API Gateway`")
+st.markdown('<div class="sub-header">Universal Multi-Currency Cleaning, Date Normalization, Column Mapping & Webhook API Gateway</div>', unsafe_allow_html=True)
 
 b1, b2, b3, b4, b5 = st.columns(5)
 b1.markdown('<div class="badge-box">🔒 GDPR Ready</div>', unsafe_allow_html=True)
 b2.markdown('<div class="badge-box">🛡️ HIPAA Compliant</div>', unsafe_allow_html=True)
 b3.markdown('<div class="badge-box">✅ SOC2 Aligned</div>', unsafe_allow_html=True)
-b4.markdown(f'<div class="badge-box">⏳ Trial Status: {days_left} Days Remaining</div>', unsafe_allow_html=True)
-b5.markdown(f'<div class="badge-box">📍 {st.session_state.user_location}</div>', unsafe_allow_html=True)
+b4.markdown(f'<div class="badge-box">⏳ Trial: {days_left} Days Left</div>', unsafe_allow_html=True)
+b5.markdown(f'<div class="badge-box">📍 Node: Active</div>', unsafe_allow_html=True)
 
 st.divider()
 
