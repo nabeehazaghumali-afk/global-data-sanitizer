@@ -1,5 +1,4 @@
-
-          import streamlit as st
+import streamlit as st
 import pandas as pd
 import re
 
@@ -20,7 +19,6 @@ st.set_page_config(page_title="Global Data Sanitizer", layout="wide")
 st.title("🌐 Global Data Sanitizer")
 st.write("Zero Data Retention - Secure In-Memory Data Cleaning")
 
-# Expanded file support for CSV, XLSX, XLS, TXT, TSV
 uploaded_file = st.file_uploader(
     "Upload your CSV, Excel, or Text file", 
     type=["csv", "xlsx", "xls", "txt", "tsv"]
@@ -30,13 +28,11 @@ if uploaded_file is not None:
     try:
         file_name = uploaded_file.name.lower()
         
-        # Smart File Reader Logic
         if file_name.endswith('.csv'):
             df = pd.read_csv(uploaded_file)
         elif file_name.endswith(('.xlsx', '.xls')):
             df = pd.read_excel(uploaded_file)
         elif file_name.endswith(('.txt', '.tsv')):
-            # Automatically detects commas, tabs, or whitespace separators
             df = pd.read_csv(uploaded_file, sep=None, engine='python')
         else:
             st.error("Unsupported file format!")
@@ -61,7 +57,6 @@ if uploaded_file is not None:
             st.subheader("✨ 100% Cleaned Global Output Preview")
             st.dataframe(sanitizer.df.head())
             
-            # Export Option
             csv_data = sanitizer.df.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="📥 Download Cleaned File (CSV)",
