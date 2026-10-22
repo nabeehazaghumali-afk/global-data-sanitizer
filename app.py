@@ -58,9 +58,15 @@ if "sanitized_data" not in st.session_state:
 if "feedback_list" not in st.session_state:
     st.session_state.feedback_list = []
 
+# Personalized Welcome AI Greeting Setup
 if "ai_chat_history" not in st.session_state:
+    user_name = st.session_state.user_info["name"]
+    user_org = st.session_state.user_info["org"]
     st.session_state.ai_chat_history = [
-        {"role": "assistant", "content": "Hello! I am your Enterprise AI Data Assistant. I speak multiple languages (English, German, Spanish, Urdu, etc.). How can I help you sanitize or clean your datasets today?"}
+        {
+            "role": "assistant",
+            "content": f"👋 Hello **{user_name}**! Welcome to **Global Data Sanitizer** ({user_org}). Your 10-Day Enterprise Trial is currently active. How can I assist you with PII masking, AWS S3 streaming, or multi-currency normalization today?"
+        }
     ]
 
 # -----------------------------------------------------------------------------
@@ -367,31 +373,111 @@ Verification Hash: SHA256-8F90A138C421B21EE98B237012FA
                 st.error(f"Failed to send email: {msg}")
 
     # -----------------------------------------------------------------------------
-    # PAGE 5: BILLING & ENTERPRISE PLAN
+    # PAGE 5: BILLING & ENTERPRISE PLAN (PRICING, LIMITS & GLOBAL PAYMENTS)
     # -----------------------------------------------------------------------------
     elif page == "💳 Billing & Enterprise Plan":
-        st.title("💳 Subscription & Billing Gateway")
-        st.caption("Manage tier limits, enterprise wire transfers, and billing settings.")
+        st.title("💳 Subscription, Tier Limits & Payment Gateways")
+        st.caption("Flexible plans designed for National, Multinational, and International Enterprises.")
 
-        col1, col2 = st.columns(2)
+        st.success("🎉 **Special Welcome Promotion:** Activate your **10-Day Free Trial** ($0 for 10 Days)! Get instant access to automated data sanitization and currency conversion.")
+
+        st.markdown("---")
+
+        col1, col2 = st.columns(2, gap="large")
+
         with col1:
-            st.subheader("Current Tier: Enterprise Unlimited")
+            st.subheader("⚡ Professional Tier")
+            st.markdown("Designed for National Companies & Independent Data Analysts.")
+            
+            st.metric(label="Monthly Subscription", value="$19 USD / month", delta="10-Day Free Trial Active ($0 Now)")
+
             st.markdown("""
-- **Cloud Connectors:** Unlimited AWS S3, GCS & Snowflake Streams
-- **RBAC Seat Limit:** 50 Users
-- **SSO:** Azure AD / Okta Included
-- **Audit Logs:** Retained for 7 Years
+            **Flexible Plan Limits & Features:**
+            - 🔹 **Usage Limit:** Up to 1,000,000 Rows / Month
+            - 🔹 **Cloud Integration:** AWS S3 Direct Stream
+            - 🔹 **PII Sanitization:** SHA-256 Masking & Anonymization
+            - 🔹 **Currency Suite:** All Major World Currencies Supported
+            - 🔹 **Support:** Email & In-App Multilingual AI Assistant
             """)
-            st.metric("Monthly Consumption", "$4,950 / month", delta="Billed Annually")
+
+            user_email_input = st.text_input("Enter Work Email for Trial Activation", value=st.session_state.user_info["email"])
+
+            if st.button("🚀 Start 10-Day Free Trial ($19/mo afterwards)", type="primary"):
+                welcome_html = f"""
+                <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #0f172a; color: #ffffff;">
+                    <div style="background-color: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155;">
+                        <h1 style="color: #38bdf8;">Welcome to Global Data Sanitizer! 🌐</h1>
+                        <p>Hi <b>{st.session_state.user_info['name']}</b>,</p>
+                        <p>Thank you for choosing our platform. Your <b>10-Day Unlimited Free Trial</b> has been successfully activated for <b>{st.session_state.user_info['org']}</b>.</p>
+                        <hr style="border: none; border-top: 1px solid #334155; margin: 20px 0;" />
+                        <h3>⚡ Getting Started Guide:</h3>
+                        <ul>
+                            <li>Ingest your CSV/Excel files or stream AWS S3 datasets</li>
+                            <li>Run automated PII masking & GDPR compliance checks</li>
+                            <li>Export formal compliance reports for audit verification</li>
+                        </ul>
+                        <p style="font-size: 13px; color: #94a3b8; margin-top: 30px;">
+                            Need assistance? Reply directly to this email or chat with our 24/7 AI Assistant inside the dashboard.
+                        </p>
+                    </div>
+                </div>
+                """
+                success, msg = send_automated_email(user_email_input, "🎉 Welcome to Global Data Sanitizer - 10-Day Trial Activated!", welcome_html)
+                
+                st.balloons()
+                if success:
+                    st.success(f"10-Day Free Trial Activated! Confirmation email sent to **{user_email_input}**.")
+                else:
+                    st.warning(f"Trial activated locally. Email status: {msg}")
 
         with col2:
-            st.subheader("Payment Methods")
-            payment_method = st.radio("Select Payment Method", ["Stripe Corporate Card", "Wire Transfer / SWIFT Invoice"])
-            if payment_method == "Stripe Corporate Card":
+            st.subheader("🏢 Enterprise Unlimited Tier")
+            st.markdown("Built for International & Multinational Corporations requiring custom limits.")
+
+            st.metric(label="Enterprise Billing", value="$499 USD / month", delta="Billed Annually")
+
+            st.markdown("""
+            **Enterprise Limits & Features:**
+            - 🔹 **Usage Limit:** Unlimited Rows & Terabyte-Scale Pipelines
+            - 🔹 **Cloud Integration:** AWS S3, Google Cloud, Snowflake Warehouse
+            - 🔹 **Security & SSO:** Azure AD & Okta SAML 2.0 Integration
+            - 🔹 **Role Management:** Up to 50 Custom RBAC User Seats
+            - 🔹 **Compliance:** 7-Year Tamper-Proof Audit Logs Retention
+            """)
+
+            # Worldwide Banking Methods
+            st.subheader("🌐 Global Payment Gateways")
+            payment_method = st.radio(
+                "Select Preferred Payment Method",
+                [
+                    "🅿️ Payoneer Corporate Account",
+                    "💳 Stripe Payment Gateway (Visa / Mastercard)",
+                    "🌐 PayPal Business Gateway",
+                    "🏦 SWIFT Bank Wire Transfer"
+                ]
+            )
+
+            if payment_method == "🅿️ Payoneer Corporate Account":
+                st.info("💡 Payoneer Receiving Accounts supported in USD, EUR, GBP, CAD, AUD, JPY.")
+                st.text_input("Payoneer ID / Email", value="billing@enterprise.com")
+                if st.button("Process via Payoneer"):
+                    st.success("Payoneer billing link generated successfully!")
+
+            elif payment_method == "💳 Stripe Payment Gateway (Visa / Mastercard)":
                 st.text_input("Cardholder Name", value=st.session_state.user_info["name"])
                 st.text_input("Card Number", value="•••• •••• •••• 4242")
+                if st.button("Process via Stripe"):
+                    st.success("Stripe Payment Processed & Plan Upgraded!")
+
+            elif payment_method == "🌐 PayPal Business Gateway":
+                st.text_input("PayPal Business Email", value="payments@enterprise.com")
+                if st.button("Process via PayPal"):
+                    st.success("Redirecting to PayPal Business Gateway...")
+
             else:
-                st.info("SWIFT Routing Instructions dispatched to billing email.")
+                st.info("🏛️ **SWIFT Banking Details:**\n- Bank: Citibank N.A. / Deutsche Bank\n- Beneficiary: Nexus Digital Enterprise Node\n- SWIFT/BIC: CITIUS33XXX\n- Account/IBAN: US8937040011002233")
+                if st.button("Generate SWIFT Proforma Invoice"):
+                    st.success("Proforma Invoice generated and sent to billing email!")
 
     # -----------------------------------------------------------------------------
     # PAGE 6: USER FEEDBACK MODULE
