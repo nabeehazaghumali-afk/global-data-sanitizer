@@ -163,10 +163,10 @@ with main_col:
         st.caption("Designed for agile startups and strict banking pipelines with zero data persistence.")
 
         col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Trust Model", "Zero Trust / Startup Ready")
-        col2.metric("Currency Suite", "Multi-Currency Clean")
-        col3.metric("Data Retention", "Zero Persistence")
-        col4.metric("Compliance Engine", "SOC2 / HIPAA / GDPR")
+        col1.metric("Security", "Zero Trust OIDC")
+        col2.metric("Currencies", "Multi-Currency Clean")
+        col3.metric("Retention", "Zero Persistence")
+        col4.metric("Compliance", "SOC2 / HIPAA / GDPR")
 
         st.markdown("---")
 
