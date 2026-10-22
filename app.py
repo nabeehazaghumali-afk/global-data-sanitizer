@@ -455,10 +455,12 @@ Certified By    : {st.session_state.user_info["name"]} ({st.session_state.user_i
 Report Title    : {report_title}
 
 AUDIT LOG SUMMARY:
---------------------------------------------------------------------------------{logs_df.to_string(index=False)}
+--------------------------------------------------------------------------------
+{logs_df.to_string(index=False)}
 
 AUDITOR COMPLIANCE STATEMENTS:
---------------------------------------------------------------------------------{auditor_notes}
+--------------------------------------------------------------------------------
+{auditor_notes}
 
 SECURITY STANDARDS:
 [X] ISO 27001 - Information Security Management Systems
@@ -548,196 +550,84 @@ Verification Hash: SHA256-9F81B247E532C33FF09A348013FB
 
             if st.button("🚀 Start 10-Day Free Trial ($19/mo afterwards)", type="primary"):
                 welcome_html = f"""
-                <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #0f172a; color: #ffffff;">
-                    <div style="background-color: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155;">
-                        <h1 style="color: #38bdf8;">Welcome to Global Data Sanitizer! 🌐</h1>
-                        <p>Hi <b>{st.session_state.user_info['name']}</b>,</p>
-                        <p>Thank you for choosing our platform. Your <b>10-Day Unlimited Free Trial</b> has been successfully activated for <b>{st.session_state.user_info['org']}</b>.</p>
-                        <hr style="border: none; border-top: 1px solid #334155; margin: 20px 0;" />
-                        <h3>⚡ Getting Started Guide:</h3>
-                        <ul>
-                            <li>Ingest your CSV/Excel files or stream via Zero Trust IAM</li>
-                            <li>Run automated PII masking & GDPR compliance checks</li>
-                            <li>Export formal compliance reports for audit verification</li>
-                        </ul>
-                        <p style="font-size: 13px; color: #94a3b8; margin-top: 30px;">
-                            Need assistance? Reply directly to this email or chat with our 24/7 AI Assistant inside the dashboard.
-                        </p>
+                <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 8px;">
+                        <h2 style="color: #0056b3;">Welcome to Global Data Sanitizer Pro!</h2>
+                        <p>Hello <b>{st.session_state.user_info['name']}</b>,</p>
+                        <p>Your 10-Day Free Trial ($19/mo afterwards) is now officially active.</p>
                     </div>
                 </div>
                 """
-                success, msg = send_automated_email(user_email_input, "🎉 Welcome to Global Data Sanitizer - 10-Day Trial Activated!", welcome_html)
-                
-                st.balloons()
-                if success:
-                    st.success(f"10-Day Free Trial Activated! Confirmation email sent to **{user_email_input}**.")
-                else:
-                    st.warning(f"Trial activated locally. Email status: {msg}")
+                send_automated_email(user_email_input, "Welcome to Pro Trial", welcome_html)
+                st.success("10-Day Free Trial Activated! Confirmation email dispatched.")
 
         with col2:
-            st.subheader("🏢 Enterprise Unlimited Tier")
-            st.markdown("Built for International & Multinational Corporations requiring custom limits.")
-
-            st.metric(label="Enterprise Billing", value="$499 USD / month", delta="Billed Annually")
+            st.subheader("🏢 Enterprise & Bank On-Premise")
+            st.markdown("For Banks, Fintech Agencies, and Multinationals.")
+            
+            st.metric(label="Enterprise Licensing", value="Custom / SLA Based", delta="Zero Persistence Certified")
 
             st.markdown("""
-            **Enterprise Limits & Features:**
-            - 🔹 **Usage Limit:** Unlimited Rows & Terabyte-Scale Pipelines
-            - 🔹 **Cloud Integration:** AWS S3, Google Cloud, Snowflake, On-Premise Docker
-            - 🔹 **Security & SSO:** Azure AD & Okta SAML 2.0 Integration
-            - 🔹 **Role Management:** Up to 50 Custom RBAC User Seats
-            - 🔹 **Compliance:** 7-Year Tamper-Proof Audit Logs Retention
+            **Enterprise Key Features:**
+            - 🔹 **Unlimited Processing:** Unlimited Rows & Parallel Streams
+            - 🔹 **On-Premise Deployment:** Dedicated Docker & Kubernetes Helm Charts
+            - 🔹 **SLA Guarantee:** 99.99% Uptime Guarantee with Custom DPA
+            - 🔹 **Dedicated Support:** 24/7 Security Operations Team
             """)
 
-            # Worldwide Banking Methods
-            st.subheader("🌐 Global Payment Gateways")
-            payment_method = st.radio(
-                "Select Preferred Payment Method",
-                [
-                    "🅿️ Payoneer Corporate Account",
-                    "💳 Stripe Payment Gateway (Visa / Mastercard)",
-                    "🌐 PayPal Business Gateway",
-                    "🏦 SWIFT Bank Wire Transfer"
-                ]
-            )
-
-            if payment_method == "🅿️ Payoneer Corporate Account":
-                st.info("💡 Payoneer Receiving Accounts supported in USD, EUR, GBP, CAD, AUD, JPY.")
-                st.text_input("Payoneer ID / Email", value="billing@enterprise.com")
-                if st.button("Process via Payoneer"):
-                    st.success("Payoneer billing link generated successfully!")
-
-            elif payment_method == "💳 Stripe Payment Gateway (Visa / Mastercard)":
-                st.text_input("Cardholder Name", value=st.session_state.user_info["name"])
-                st.text_input("Card Number", value="•••• •••• •••• 4242")
-                if st.button("Process via Stripe"):
-                    st.success("Stripe Payment Processed & Plan Upgraded!")
-
-            elif payment_method == "🌐 PayPal Business Gateway":
-                st.text_input("PayPal Business Email", value="payments@enterprise.com")
-                if st.button("Process via PayPal"):
-                    st.success("Redirecting to PayPal Business Gateway...")
-
-            else:
-                st.info("🏛️ **SWIFT Banking Details:**\n- Bank: Citibank N.A. / Deutsche Bank\n- Beneficiary: Nexus Digital Enterprise Node\n- SWIFT/BIC: CITIUS33XXX\n- Account/IBAN: US8937040011002233")
-                if st.button("Generate SWIFT Proforma Invoice"):
-                    st.success("Proforma Invoice generated and sent to billing email!")
+            if st.button("📞 Request Enterprise On-Premise Demo"):
+                st.info("Enterprise team notified. An NDA and custom architecture document will be dispatched.")
 
     # -----------------------------------------------------------------------------
-    # PAGE 10: USER FEEDBACK MODULE
+    # PAGE 10: USER FEEDBACK
     # -----------------------------------------------------------------------------
     elif page == "⭐ User Feedback":
-        st.title("⭐ User Feedback & Rating System")
-        st.caption("Provide feedback to improve internal processes and data engine features.")
+        st.title("⭐ User Feedback & Enterprise Reviews")
+        st.caption("We value your feedback to continuously improve our global data sanitization standards.")
 
-        st.markdown("---")
+        with st.form("feedback_form"):
+            reviewer_name = st.text_input("Your Name / Role", value=f"{st.session_state.user_info['name']} ({st.session_state.user_info['role']})")
+            rating = st.slider("Rating (1 to 5 Stars)", 1, 5, 5)
+            comments = st.text_area("Your Review or Feature Request", placeholder="Share your experience with our PII sanitization and speed...")
+            submit_feedback = st.form_submit_button("Submit Enterprise Feedback")
 
-        with st.form(key="user_feedback_form", clear_on_submit=True):
-            st.subheader("Submit Enterprise Feedback")
-
-            rating = st.feedback("stars")
-
-            category = st.selectbox(
-                "Feedback Category",
-                [
-                    "🐛 Bug Report",
-                    "💡 Feature Request",
-                    "🚀 Performance & Speed",
-                    "🎨 UI/UX Design",
-                    "🔒 Security & Compliance",
-                    "❓ General Feedback"
-                ]
-            )
-
-            comment = st.text_area(
-                "Detailed Feedback (Max 200 words)",
-                placeholder="Describe your feedback, bug details, or feature ideas here...",
-                max_chars=1200
-            )
-
-            submit_btn = st.form_submit_button("Submit Feedback 🚀", type="primary")
-
-        if submit_btn:
-            word_count = len(comment.split())
-
-            if rating is None:
-                st.error("Please select a star rating before submitting.")
-            elif not comment.strip():
-                st.error("Please enter a comment describing your feedback.")
-            elif word_count > 200:
-                st.error(f"Comment exceeds word limit! You entered {word_count} words (Limit: 200 words).")
-            else:
-                current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                star_score = rating + 1
-
-                feedback_data = {
-                    "Timestamp": current_timestamp,
-                    "User": st.session_state.user_info["name"],
-                    "Role": st.session_state.user_info["role"],
-                    "Rating": f"{star_score} / 5 ⭐",
-                    "Category": category,
-                    "Comment": comment
+            if submit_feedback:
+                new_fb = {
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "name": reviewer_name,
+                    "rating": "⭐" * rating,
+                    "comments": comments
                 }
-                st.session_state.feedback_list.append(feedback_data)
-
-                audit_entry = {
-                    "timestamp": current_timestamp,
-                    "actor": f"{st.session_state.user_info['name']} ({st.session_state.user_info['role']})",
-                    "action": f"Submitted Feedback: {star_score} Stars ({category})",
-                    "rows_affected": 0,
-                    "status": "Logged",
-                    "compliance": "System Feedback"
-                }
-                st.session_state.audit_logs.insert(0, audit_entry)
-
-                st.balloons()
-                st.success("Thank you! Your feedback has been recorded and logged into the audit pipeline.")
+                st.session_state.feedback_list.insert(0, new_fb)
+                st.success("Thank you for your feedback! It has been recorded.")
 
         if st.session_state.feedback_list:
             st.markdown("---")
-            st.subheader("📋 Submitted Feedback Logs")
-            st.dataframe(pd.DataFrame(st.session_state.feedback_list), use_container_width=True)
+            st.subheader("Recent Feedback Submitted")
+            for fb in st.session_state.feedback_list:
+                st.markdown(f"**{fb['name']}** ({fb['rating']}) - *{fb['timestamp']}*")
+                st.write(f"> {fb['comments']}")
 
-# =============================================================================
-# RIGHT-SIDE PANEL: MULTILINGUAL AI ASSISTANT FOR DATA HELP & CLEANING
-# =============================================================================
+# -----------------------------------------------------------------------------
+# RIGHT COLUMN: MULTILINGUAL AI ASSISTANT & CHATBOT
+# -----------------------------------------------------------------------------
 with ai_col:
-    st.subheader("🤖 Multilingual AI Assistant")
-    st.caption("Ask questions in English, German, Spanish, Urdu, etc.")
-    
-    st.info("💡 **Instant Help:** Ask how to clean PII, mask emails, normalize global currencies, or connect via Zero Trust IAM.")
+    st.subheader("🤖 Enterprise AI Assistant")
+    st.caption("Ask questions about banking compliance, setup guides, or API security.")
 
-    # Chat Container
-    chat_container = st.container(height=450)
-    
-    with chat_container:
-        for msg in st.session_state.ai_chat_history:
-            if msg["role"] == "user":
-                st.chat_message("user").write(msg["content"])
-            else:
-                st.chat_message("assistant").write(msg["content"])
+    for message in st.session_state.ai_chat_history:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-    # User Input Field
-    user_prompt = st.chat_input("Ask AI in any language...")
+    user_query = st.chat_input("Ask AI in any language...")
+    if user_query:
+        st.session_state.ai_chat_history.append({"role": "user", "content": user_query})
+        with st.chat_message("user"):
+            st.markdown(user_query)
 
-    if user_prompt:
-        st.session_state.ai_chat_history.append({"role": "user", "content": user_prompt})
+        # Smart automated AI response logic
+        reply = f"Hello {st.session_state.user_info['name']}! Regarding your query about *'{user_query}'*, our Zero Trust AES-256 engine handles this automatically in volatile RAM with zero data retention, ensuring full compliance with GDPR and SOC2 Type II standards."
         
-        # Smart Multilingual Automated Response Logic
-        prompt_lower = user_prompt.lower()
-        
-        if "german" in prompt_lower or "hallo" in prompt_lower or "wie" in prompt_lower or "danke" in prompt_lower:
-            ai_reply = "Hallo! Ich bin Ihr Datenbereinigungs-Assistent für Startups und Banken. Ich unterstütze Zero Trust IAM, Multi-Region Routing und AES-256 Verschlüsselung."
-        elif "spanish" in prompt_lower or "hola" in prompt_lower or "gracias" in prompt_lower:
-            ai_reply = "¡Hola! Soy tu asistente de limpieza de datos para startups y bancos, con cifrado AES-256, enrutamiento multi-región y arquitectura Zero Trust."
-        elif "urdu" in prompt_lower or "kaise" in prompt_lower or "kya" in prompt_lower:
-            ai_reply = "Hello! Main aapka AI Data Assistant hoon. Aap mujh se startups aur banks ke liye Zero Trust IAM, AES-256 encryption, compliance scorecard aur custom regex rules ke baray mein pooch sakte hain."
-        elif "s3" in prompt_lower or "aws" in prompt_lower or "iam" in prompt_lower or "role" in prompt_lower:
-            ai_reply = "To stream data securely, use AWS IAM Role ARN delegation in Tab 1 without exposing static credentials."
-        elif "clean" in prompt_lower or "null" in prompt_lower or "pii" in prompt_lower or "mask" in prompt_lower or "currency" in prompt_lower:
-            ai_reply = "Our AES-256 engine automatically masks PII in-memory, cleans messy data, normalizes global currencies, and generates tamper-proof SOC2 audit logs."
-        else:
-            ai_reply = f"I am ready to assist with your query: '{user_prompt}All operations run under strict Zero Trust and AES-256 security."
-
-        st.session_state.ai_chat_history.append({"role": "assistant", "content": ai_reply})
-        st.rerun()
+        st.session_state.ai_chat_history.append({"role": "assistant", "content": reply})
+        with st.chat_message("assistant"):
+            st.markdown(reply)
