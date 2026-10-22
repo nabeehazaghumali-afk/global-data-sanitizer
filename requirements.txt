@@ -1,2 +1,5 @@
 streamlit
 pandas
+pydantic
+requests
+python-multipart
