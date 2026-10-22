@@ -103,7 +103,7 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("🧭 Navigation Menu")
     
-   page = st.radio(
+       page = st.radio(
         "Go to",
         [
             "📁 Data Workspace & Cloud Ingestion",
