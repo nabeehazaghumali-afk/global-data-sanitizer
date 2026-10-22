@@ -104,16 +104,16 @@ with st.sidebar:
     st.subheader("🧭 Navigation Menu")
     
 page = st.radio(
-    "Go to",
-    [
-          "📁 Data Workspace & Cloud Ingestion",
-          "👥 Team Access & RBAC",
-          "📜 Audit Logs & Compliance PDF",
-          "🔌 API, Webhooks & SSO",
-          "💳 Billing & Enterprise Plan",
-          "⭐ User Feedback"  # <--- Yeh line add karein
+        "Go to",
+        [
+            "📁 Data Workspace & Cloud Ingestion",
+            "👥 Team Access & RBAC",
+            "📜 Audit Logs & Compliance PDF",
+            "🔌 API, Webhooks & SSO",
+            "💳 Billing & Enterprise Plan",
+            "⭐ User Feedback"
         ]
-    ]
+    )
  
     st.markdown("---")
     st.caption("🔒 **Security Badges Active:**")
