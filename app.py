@@ -103,21 +103,36 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("🧭 Navigation Menu")
     
-    page = st.radio(
+   page = st.radio(
         "Go to",
         [
             "📁 Data Workspace & Cloud Ingestion",
             "👥 Team Access & RBAC",
             "📜 Audit Logs & Compliance PDF",
             "🔌 API, Webhooks & SSO",
-            "💳 Billing & Enterprise Plan"
+            "💳 Billing & Enterprise Plan",
+            "⭐ User Feedback"  # <--- Yeh line add karein
         ]
-    )
-
+ 
     st.markdown("---")
     st.caption("🔒 **Security Badges Active:**")
     st.caption("✅ GDPR Ready | ✅ HIPAA Compliant | ✅ SOC2 Type II")
 
+# AUTOMATED APP INSTALLER BANNER (FOR EXTERNAL CLIENTS)
+    st.markdown("---")
+    st.subheader("📱 Install Desktop App")
+    st.markdown("""
+    <div style="background-color: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+        <p style="color: #e2e8f0; font-size: 13px; margin-bottom: 8px;">
+            <b>Want to run this as a standalone software?</b>
+        </p>
+        <ol style="color: #94a3b8; font-size: 12px; padding-left: 18px; margin: 0;">
+            <li>Click <b>⋮ (Top-Right Chrome/Edge Menu)</b></li>
+            <li>Select <b>Save and share ➔ Install Page as App</b></li>
+            <li>Pin to Taskbar or Desktop</li>
+        </ol>
+    </div>
+    """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # PAGE 1: DATA WORKSPACE & CLOUD INGESTION (S3 / GCS / SNOWFLAKE)
@@ -416,4 +431,54 @@ elif page == "💳 Billing & Enterprise Plan":
             st.info("Invoice Terms: Net 30 Days\n\nBank: J.P. Morgan Chase New York\n\nSWIFT/BIC: CHASUS33XXX")
 
     with pay_col2:
+        # -----------------------------------------------------------------------------
+# PAGE 6: USER FEEDBACK & REVIEWS
+# -----------------------------------------------------------------------------
+elif page == "⭐ User Feedback":
+    st.title("⭐ User Experience & Enterprise Feedback")
+    st.caption("We value your feedback! Help us improve our data sanitization & cloud pipeline features.")
+
+    st.markdown("---")
+    
+    f_col1, f_col2 = st.columns([1, 2])
+    
+    with f_col1:
+        st.subheader("Rate Your Experience")
+        star_rating = st.feedback("stars")
+        
+        category = st.selectbox(
+            "Feedback Category", 
+            [
+                "General Experience", 
+                "Data Sanitization Speed", 
+                "Cloud Connectors (S3/Snowflake)", 
+                "Security & Compliance", 
+                "Bug Report"
+            ]
+        )
+    
+    with f_col2:
+        st.subheader("Your Review")
+        feedback_text = st.text_area(
+            "Write your review (Up to 200 words):",
+            height=160,
+            max_chars=1200,
+            placeholder="Tell us what you liked or how we can improve..."
+        )
+        
+        if st.button("Submit Feedback", type="primary"):
+            if star_rating is not None:
+                st.balloons()  # Celebration Animation!
+                st.success(f"Thank you, {st.session_state.user_info['name']}! Your {star_rating + 1}-Star review for '{category}' has been recorded.")
+                
+                # Audit Log mein record add karna
+                st.session_state.audit_logs.append({
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "actor": st.session_state.user_info['name'],
+                    "action": f"Submitted Review ({star_rating + 1}/5 Stars - {category})",
+                    "rows_affected": 1,
+                    "status": "Success"
+                })
+            else:
+                st.warning("Please select a star rating before submitting!")
         st.success("✅ **Automated Trial & Greeting Active:**\n\nEvery new tenant receives an instant automated welcome email via `global.data.sanitizer@gmail.com` with a 14-day fully featured enterprise trial unlocked.")
