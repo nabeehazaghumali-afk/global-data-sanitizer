@@ -115,7 +115,7 @@ with st.sidebar:
         ]
     )
 
-            st.markdown("---")
+    st.markdown("---")
             st.caption("🔒 **Security Badges Active:**")
             st.caption("✅ GDPR Ready | ✅ HIPAA Compliant | ✅ SOC2 Type II")
 
