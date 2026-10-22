@@ -6,7 +6,6 @@ import requests
 import hashlib
 import io
 import json
-import time
 from datetime import datetime, timedelta
 
 # --- PAGE CONFIGURATION ---
@@ -22,6 +21,8 @@ if "user" not in st.session_state:
     st.session_state.user = None
 if "user_location" not in st.session_state:
     st.session_state.user_location = "Detecting Global Node..."
+if "monthly_files_processed" not in st.session_state:
+    st.session_state.monthly_files_processed = 12  # Current usage tracker (Max 60 for Pro)
 
 def fetch_geo_location():
     try:
@@ -76,13 +77,10 @@ class GlobalEnterpriseSanitizer:
 # --- ULTRA-MODERN LUXURY UI STYLING ---
 st.markdown("""
     <style>
-    /* Main Background & Font Styling */
     .stApp {
         background: radial-gradient(circle at 50% 0%, #111827 0%, #0b0f19 100%);
         color: #f3f4f6;
     }
-    
-    /* Header Styling */
     .main-header {
         font-size: 2.5rem;
         font-weight: 800;
@@ -91,15 +89,12 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
         margin-bottom: 0px;
     }
-    
     .sub-header {
         color: #9CA3AF;
         font-size: 1rem;
         font-weight: 500;
         margin-bottom: 20px;
     }
-
-    /* Glassmorphism Badge Cards */
     .badge-box {
         background: rgba(17, 24, 39, 0.7);
         border: 1px solid rgba(59, 130, 246, 0.2);
@@ -112,8 +107,6 @@ st.markdown("""
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
-
-    /* Pricing Card Luxury Styling */
     .pricing-card {
         background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
         border: 2px solid rgba(59, 130, 246, 0.4);
@@ -121,26 +114,12 @@ st.markdown("""
         padding: 30px;
         text-align: center;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        transition: transform 0.3s ease;
-    }
-    .pricing-card:hover {
-        transform: translateY(-5px);
-        border-color: #3B82F6;
     }
     .pricing-price {
         font-size: 2.8rem;
         font-weight: 800;
         color: #60A5FA;
         margin: 15px 0;
-    }
-
-    /* Container Box Styling */
-    .st-emotion-cache-1r6slb0 {
-        background: rgba(31, 41, 55, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 14px;
-        padding: 20px;
-        backdrop-filter: blur(10px);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -201,7 +180,7 @@ b1.markdown('<div class="badge-box">🔒 GDPR Ready</div>', unsafe_allow_html=Tr
 b2.markdown('<div class="badge-box">🛡️ HIPAA Compliant</div>', unsafe_allow_html=True)
 b3.markdown('<div class="badge-box">✅ SOC2 Aligned</div>', unsafe_allow_html=True)
 b4.markdown(f'<div class="badge-box">⏳ Trial: {days_left} Days Left</div>', unsafe_allow_html=True)
-b5.markdown(f'<div class="badge-box">📍 Node: Active</div>', unsafe_allow_html=True)
+b5.markdown(f'<div class="badge-box">📊 Files Used: {st.session_state.monthly_files_processed}/60</div>', unsafe_allow_html=True)
 
 st.divider()
 
@@ -209,17 +188,21 @@ st.divider()
 st.sidebar.markdown(f"### 👤 Active Account")
 st.sidebar.write(f"**User:** `{st.session_state.user['name']}`")
 st.sidebar.write(f"**Email:** `{st.session_state.user['email']}`")
-st.sidebar.write(f"**Gateway:** `{st.session_state.user['provider']}`")
+st.sidebar.write(f"**Pro Quota:** `{st.session_state.monthly_files_processed} / 60 Files Used`")
 st.sidebar.markdown("---")
 
 if st.sidebar.button("🚪 Sign Out"):
     st.session_state.user = None
     st.rerun()
 
-# --- PAYWALL IF TRIAL EXPIRED ---
-if is_trial_expired:
-    st.warning("⚠️ **Your 10-Day Free Trial has expired!**")
-    st.markdown("### 💎 Upgrade to an International USD Subscription Plan")
+# --- PAYWALL / MONTHLY QUOTA CHECK ---
+if is_trial_expired or st.session_state.monthly_files_processed >= 60:
+    if st.session_state.monthly_files_processed >= 60:
+        st.warning("⚠️ **You have reached your Monthly Limit of 60 Files for the Pro Plan!**")
+    else:
+        st.warning("⚠️ **Your 10-Day Free Trial has expired!**")
+        
+    st.markdown("### 💎 Upgrade to Continue Processing Large Enterprise Datasets")
     
     p1, p2 = st.columns(2)
     with p1:
@@ -227,19 +210,21 @@ if is_trial_expired:
         <div class="pricing-card">
             <h3>⚡ Pro Professional Plan</h3>
             <div class="pricing-price">$19 <small>/mo</small></div>
-            <p>✓ Unlimited Multi-Currency Cleaning<br>✓ Advanced Column Mapping<br>✓ CSV, JSON & Parquet Global Exports</p>
+            <p>✓ Up to 60 Large Files / Month<br>✓ Advanced Column Mapping<br>✓ CSV, JSON & Parquet Global Exports</p>
         </div>
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("💳 Pay via Stripe (Credit Card / Apple Pay)", type="primary", use_container_width=True):
-            st.info("🔗 Stripe Checkout Session initialized in USD.")
+        if st.button("💳 Renew / Pay via Stripe ($19)", type="primary", use_container_width=True):
+            st.session_state.monthly_files_processed = 0  # Reset quota on simulated renewal
+            st.success("✅ Subscription renewed successfully! Quota reset.")
+            st.rerun()
             
     with p2:
         st.markdown("""
         <div class="pricing-card">
             <h3>🏢 Enterprise MNC Suite</h3>
             <div class="pricing-price">$99 <small>/mo</small></div>
-            <p>✓ Unlimited OCR & Webhook API Access<br>✓ Cryptographic SHA-256 Audit Certificates<br>✓ Payoneer / SWIFT Business Wire Support</p>
+            <p>✓ Unlimited Large Files & OCR<br>✓ Cryptographic SHA-256 Audit Certificates<br>✓ Payoneer / SWIFT Business Wire Support</p>
         </div>
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -256,9 +241,11 @@ with tab_workspace:
     dfs_dict = {}
 
     with col_workspace:
-        st.subheader("📁 Multi-Format Batch Upload & Smart Currency Scanner")
+        st.subheader("📁 Enterprise Large-File Batch Upload & Smart Scanner")
+        st.info("💡 **Enterprise Feature Active:** Large file sizes supported for enterprise datasets (thousands of rows).")
+        
         uploaded_files = st.file_uploader(
-            "Upload CSV, Excel, TSV, or Document Scans (PNG/JPG)", 
+            "Upload Large CSV, Excel, TSV, or Document Scans (PNG/JPG)", 
             type=["csv", "xlsx", "xls", "txt", "tsv", "png", "jpg", "jpeg"],
             accept_multiple_files=True
         )
@@ -315,6 +302,7 @@ with tab_workspace:
                 selected_pii_cols = st.multiselect("🔒 Select Sensitive PII Columns (Email/Phone)", all_cols)
                 
                 if st.button("Execute Targeted Sanitization Pipeline", type="primary"):
+                    st.session_state.monthly_files_processed += 1
                     sanitizer.sanitize_selected_currencies(selected_curr_cols)
                     sanitizer.standardize_selected_dates(selected_date_cols)
                     sanitizer.mask_selected_pii(selected_pii_cols)
@@ -365,7 +353,7 @@ with tab_workspace:
         q = st.text_input("Ask AI Security Assistant:")
         if q:
             if "dfs_dict" in locals() and dfs_dict:
-                st.success("🤖 **AI Analysis:** Custom column mapping and zero-retention security protocols are fully active.")
+                st.success("🤖 **AI Analysis:** Large enterprise dataset processing and zero-retention security protocols are fully active.")
             else:
                 st.warning("🤖 **AI Assistant:** Please upload dataset files on the left to begin.")
 
