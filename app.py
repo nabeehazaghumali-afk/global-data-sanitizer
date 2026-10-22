@@ -50,9 +50,8 @@ def send_automated_email(to_email, subject, body_html):
     try:
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
-        sender_email = "global.data.sanitizer@gmail.com"  # Yahan apni actual email likhein
-       sender_password = "wruh kkib sjmq crhn"      # Yahan Gmail ka App Password likhein
-        
+        sender_email = "global.data.sanitizer@gmail.com"
+        sender_password = "wruh kkib sjmq crhn"
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
         msg["From"] = f"Global Data Sanitizer <{sender_email}>"
