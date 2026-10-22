@@ -359,25 +359,61 @@ elif page == "🔌 API, Webhooks & SSO":
 # PAGE 5: BILLING & ENTERPRISE PLAN
 # -----------------------------------------------------------------------------
 elif page == "💳 Billing & Enterprise Plan":
-    st.title("💳 Subscription & Billing Gateway")
-    st.caption("Manage tier limits, enterprise wire transfers, and billing settings.")
+    st.title("💳 Global Subscription & Enterprise Pricing Gateway")
+    st.caption("Choose the right scale for your organization—from local startups to Fortune 500 multinationals.")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("Current Tier: Enterprise Unlimited")
+    st.markdown("---")
+    
+    # 3 Pricing Tiers Layout
+    b_col1, b_col2, b_col3 = st.columns(3)
+
+    with b_col1:
+        st.subheader("🚀 Starter Tier")
+        st.caption("For small teams & testing")
         st.markdown("""
-        * **Cloud Connectors:** Unlimited AWS S3, GCS & Snowflake Streams
-        * **RBAC Seat Limit:** 50 Users
-        * **SSO:** Azure AD / Okta Included
-        * **Audit Logs:** Retained for 7 Years
+        * **File Limit:** Up to 200MB local upload
+        * **Cloud Connectors:** Not included
+        * **Support:** Standard Community
+        * **Audit Logs:** 30 Days Retention
         """)
-        st.metric("Monthly Consumption", "$4,950 / month", delta="Billed Annually")
+        st.metric("Price", "$49 / month")
+        st.button("Select Starter", key="btn_starter")
 
-    with col2:
-        st.subheader("Payment Methods")
+    with b_col2:
+        st.subheader("💼 Business Pro")
+        st.caption("For growing mid-size businesses")
+        st.markdown("""
+        * **File Limit:** Up to 10GB batch streams
+        * **Cloud Connectors:** AWS S3 Basic
+        * **Support:** Priority Email Support
+        * **Audit Logs:** 1 Year Retention
+        """)
+        st.metric("Price", "$499 / month")
+        st.button("Select Pro", key="btn_pro")
+
+    with b_col3:
+        st.subheader("🌐 Enterprise Unlimited")
+        st.caption("For Google / Microsoft scale MNCs")
+        st.markdown("""
+        * **File Limit:** **Unlimited (Terabytes)**
+        * **Cloud Connectors:** AWS S3, GCS & Snowflake
+        * **Security:** SSO (Azure AD / Okta) + RBAC
+        * **Support:** 24/7 Dedicated Engineer
+        """)
+        st.metric("Price", "$4,950 / month", delta="Most Popular")
+        st.button("Active Enterprise Plan", key="btn_enterprise", type="primary")
+
+    st.markdown("---")
+    st.subheader("Secure Corporate Payment & Wire Gateway")
+    
+    pay_col1, pay_col2 = st.columns(2)
+    with pay_col1:
         payment_method = st.radio("Select Payment Method", ["Stripe Corporate Card", "Wire Transfer / SWIFT Invoice"])
         if payment_method == "Stripe Corporate Card":
-            st.text_input("Card Number", value="**** **** **** 4242")
+            st.text_input("Corporate Card Number", value="**** **** **** 4242")
             st.button("Update Card Details")
         else:
-            st.info("Invoice Terms: Net 30\n\nBank: J.P. Morgan Chase\n\nSWIFT: CHASUS33XXX")
+            st.info("Invoice Terms: Net 30 Days\n\nBank: J.P. Morgan Chase New York\n\nSWIFT/BIC: CHASUS33XXX")
+
+    with pay_col2:
+        st.success("✅ **Automated Trial & Greeting Active:**\n\nEvery new tenant receives an instant automated welcome email via `global.data.sanitizer@gmail.com` with a 14-day fully featured enterprise trial unlocked.")
