@@ -5,7 +5,6 @@ import smtplib
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -56,6 +55,9 @@ if "audit_logs" not in st.session_state:
 if "sanitized_data" not in st.session_state:
     st.session_state.sanitized_data = None
 
+if "feedback_list" not in st.session_state:
+    st.session_state.feedback_list = []
+
 # -----------------------------------------------------------------------------
 # AUTOMATED ENTERPRISE EMAIL ENGINE
 # -----------------------------------------------------------------------------
@@ -82,7 +84,6 @@ def send_automated_email(to_email, subject, body_html):
         return True, "Email sent successfully!"
     except Exception as e:
         return False, str(e)
-
 
 # -----------------------------------------------------------------------------
 # SIDEBAR NAVIGATION & RBAC AUDIT PANEL
@@ -116,33 +117,32 @@ with st.sidebar:
     )
 
     st.markdown("---")
-            st.caption("🔒 **Security Badges Active:**")
-            st.caption("✅ GDPR Ready | ✅ HIPAA Compliant | ✅ SOC2 Type II")
+    st.caption("🔒 **Security Badges Active:**")
+    st.caption("✅ GDPR Ready | ✅ HIPAA Compliant | ✅ SOC2 Type II")
 
-# AUTOMATED APP INSTALLER BANNER (FOR EXTERNAL CLIENTS)
+    # AUTOMATED APP INSTALLER BANNER
     st.markdown("---")
     st.subheader("📱 Install Desktop App")
-    st.markdown("""
-    <div style="background-color: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
-        <p style="color: #e2e8f0; font-size: 13px; margin-bottom: 8px;">
-            <b>Want to run this as a standalone software?</b>
-        </p>
-        <ol style="color: #94a3b8; font-size: 12px; padding-left: 18px; margin: 0;">
-            <li>Click <b>⋮ (Top-Right Chrome/Edge Menu)</b></li>
-            <li>Select <b>Save and share ➔ Install Page as App</b></li>
-            <li>Pin to Taskbar or Desktop</li>
-        </ol>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style="background-color: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+            <p style="color: #e2e8f0; font-size: 13px; margin-bottom: 8px;">
+                <b>Want to run this as a standalone software?</b>
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    if st.button("💻 Download Windows Installer (.EXE)"):
+        st.success("Download started! Local desktop agent package prepared.")
 
 # -----------------------------------------------------------------------------
-# PAGE 1: DATA WORKSPACE & CLOUD INGESTION (S3 / GCS / SNOWFLAKE)
+# PAGE 1: DATA WORKSPACE & CLOUD INGESTION
 # -----------------------------------------------------------------------------
 if page == "📁 Data Workspace & Cloud Ingestion":
     st.title("🌐 Global Data Sanitizer & Cloud Data Ingestion Pipeline")
     st.caption("Ingest data via Direct File Upload, S3 Direct Bucket Streams, or Snowflake Warehouses.")
 
-    # Status Cards
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Cloud Storage", "Active (S3 / GCS)")
     col2.metric("Pipeline Speed", "1.2 GB/sec")
@@ -151,11 +151,9 @@ if page == "📁 Data Workspace & Cloud Ingestion":
 
     st.markdown("---")
 
-    # Access Level Check
     if st.session_state.user_info["role"] in ["Admin", "Data Analyst"]:
         tabs = st.tabs(["🪣 AWS S3 / Cloud Bucket Ingestion", "❄️ Snowflake Data Warehouse", "📄 Local File Upload (200MB Max)"])
         
-        # Tab 1: S3 Connector
         with tabs[0]:
             st.subheader("Connect Amazon S3 / Google Cloud Storage")
             st.write("Stream high-volume datasets (Terabyte Scale) directly into the sanitization pipeline using secure Pre-signed S3 URLs.")
@@ -171,7 +169,6 @@ if page == "📁 Data Workspace & Cloud Ingestion":
             if st.button("🚀 Trigger Cloud Bucket Ingestion & Sanitization", type="primary"):
                 with st.spinner("Connecting to AWS S3 & Streaming Multi-Gigabyte Blocks..."):
                     time.sleep(2)
-                    # Generate sample sanitized dataframe
                     df_sample = pd.DataFrame({
                         "Customer_ID": [f"CUST-{i:05d}" for i in range(1, 101)],
                         "Name": ["ANONYMIZED_PII"] * 100,
@@ -182,7 +179,6 @@ if page == "📁 Data Workspace & Cloud Ingestion":
                     })
                     st.session_state.sanitized_data = df_sample
                     
-                    # Log Audit Entry
                     log_entry = {
                         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                         "actor": f"{st.session_state.user_info['name']} ({st.session_state.user_info['role']})",
@@ -194,7 +190,6 @@ if page == "📁 Data Workspace & Cloud Ingestion":
                     st.session_state.audit_logs.insert(0, log_entry)
                     st.success("S3 Stream Sanitized Successfully! 100,000 Rows Cleaned & Anonymized.")
 
-        # Tab 2: Snowflake Connector
         with tabs[1]:
             st.subheader("Snowflake Enterprise Warehouse Query Engine")
             st.text_input("Snowflake Account Identifier", value="xy12345.us-east-1")
@@ -202,7 +197,6 @@ if page == "📁 Data Workspace & Cloud Ingestion":
             if st.button("Execute Warehouse Pipeline"):
                 st.success("Snowflake query dispatched. 2.4 Million rows sanitized in-database via pushdown computation.")
 
-        # Tab 3: Manual Upload
         with tabs[2]:
             st.subheader("Manual Document & CSV Upload")
             uploaded_file = st.file_uploader("Upload CSV or Excel File", type=["csv", "xlsx"])
@@ -212,7 +206,6 @@ if page == "📁 Data Workspace & Cloud Ingestion":
                 if st.button("Sanitize Local File"):
                     st.success("Local file sanitized successfully!")
 
-        # Display Data Preview if exists
         if st.session_state.sanitized_data is not None:
             st.markdown("---")
             st.subheader("📊 Sanitized Output Dataset Preview")
@@ -221,9 +214,8 @@ if page == "📁 Data Workspace & Cloud Ingestion":
     else:
         st.warning("⚠️ Access Restricted: Compliance Auditors have Read-Only permissions. Switch role to 'Admin' or 'Data Analyst' in the sidebar to execute ingestions.")
 
-
 # -----------------------------------------------------------------------------
-# PAGE 2: TEAM ACCESS & ROLE-BASED ACCESS CONTROL (RBAC)
+# PAGE 2: TEAM ACCESS & RBAC
 # -----------------------------------------------------------------------------
 elif page == "👥 Team Access & RBAC":
     st.title("👥 Enterprise Team Access & RBAC Management")
@@ -262,7 +254,6 @@ elif page == "👥 Team Access & RBAC":
     else:
         st.warning("⚠️ Access Denied: User Management requires 'Admin' privileges.")
 
-
 # -----------------------------------------------------------------------------
 # PAGE 3: AUDIT LOGS & COMPLIANCE PDF REPORTING
 # -----------------------------------------------------------------------------
@@ -270,7 +261,6 @@ elif page == "📜 Audit Logs & Compliance PDF":
     st.title("📜 Data Lineage & Audit Compliance Logs")
     st.caption("Complete tamper-proof execution log history for GDPR, HIPAA, and SOC2 compliance audits.")
 
-    # Audit Dataframe
     logs_df = pd.DataFrame(st.session_state.audit_logs)
     st.dataframe(logs_df, use_container_width=True)
 
@@ -292,7 +282,6 @@ elif page == "📜 Audit Logs & Compliance PDF":
             "Compliance_Frameworks": ["GDPR Article 32", "HIPAA Safeguards", "SOC2 Type II"]
         })
 
-    # Downloadable JSON/Text Compliance Certificate
     compliance_certificate = f"""
 ================================================================================
                ENTERPRISE DATA SANITIZATION COMPLIANCE CERTIFICATE              
@@ -303,12 +292,10 @@ Certified By    : {st.session_state.user_info["name"]} ({st.session_state.user_i
 Report Title    : {report_title}
 
 AUDIT LOG SUMMARY:
---------------------------------------------------------------------------------
-{logs_df.to_string(index=False)}
+--------------------------------------------------------------------------------{logs_df.to_string(index=False)}
 
 AUDITOR COMPLIANCE STATEMENTS:
---------------------------------------------------------------------------------
-{auditor_notes}
+--------------------------------------------------------------------------------{auditor_notes}
 
 SECURITY STANDARDS:
 [X] GDPR Article 32 - Pseudonymisation and encryption of personal data
@@ -326,9 +313,8 @@ Verification Hash: SHA256-8F90A138C421B21EE98B237012FA
         mime="text/plain"
     )
 
-
 # -----------------------------------------------------------------------------
-# PAGE 4: API, WEBHOOKS & ENTERPRISE SSO (OKTA / AZURE AD)
+# PAGE 4: API, WEBHOOKS & ENTERPRISE SSO
 # -----------------------------------------------------------------------------
 elif page == "🔌 API, Webhooks & SSO":
     st.title("🔌 Enterprise Single Sign-On (SSO) & Developer Integration")
@@ -370,116 +356,110 @@ elif page == "🔌 API, Webhooks & SSO":
         else:
             st.error(f"Failed to send email: {msg}")
 
-
 # -----------------------------------------------------------------------------
 # PAGE 5: BILLING & ENTERPRISE PLAN
 # -----------------------------------------------------------------------------
 elif page == "💳 Billing & Enterprise Plan":
-    st.title("💳 Global Subscription & Enterprise Pricing Gateway")
-    st.caption("Choose the right scale for your organization—from local startups to Fortune 500 multinationals.")
+    st.title("💳 Subscription & Billing Gateway")
+    st.caption("Manage tier limits, enterprise wire transfers, and billing settings.")
 
-    st.markdown("---")
-    
-    # 3 Pricing Tiers Layout
-    b_col1, b_col2, b_col3 = st.columns(3)
-
-    with b_col1:
-        st.subheader("🚀 Starter Tier")
-        st.caption("For small teams & testing")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Current Tier: Enterprise Unlimited")
         st.markdown("""
-        * **File Limit:** Up to 200MB local upload
-        * **Cloud Connectors:** Not included
-        * **Support:** Standard Community
-        * **Audit Logs:** 30 Days Retention
+- **Cloud Connectors:** Unlimited AWS S3, GCS & Snowflake Streams
+- **RBAC Seat Limit:** 50 Users
+- **SSO:** Azure AD / Okta Included
+- **Audit Logs:** Retained for 7 Years
         """)
-        st.metric("Price", "$49 / month")
-        st.button("Select Starter", key="btn_starter")
+        st.metric("Monthly Consumption", "$4,950 / month", delta="Billed Annually")
 
-    with b_col2:
-        st.subheader("💼 Business Pro")
-        st.caption("For growing mid-size businesses")
-        st.markdown("""
-        * **File Limit:** Up to 10GB batch streams
-        * **Cloud Connectors:** AWS S3 Basic
-        * **Support:** Priority Email Support
-        * **Audit Logs:** 1 Year Retention
-        """)
-        st.metric("Price", "$499 / month")
-        st.button("Select Pro", key="btn_pro")
-
-    with b_col3:
-        st.subheader("🌐 Enterprise Unlimited")
-        st.caption("For Google / Microsoft scale MNCs")
-        st.markdown("""
-        * **File Limit:** **Unlimited (Terabytes)**
-        * **Cloud Connectors:** AWS S3, GCS & Snowflake
-        * **Security:** SSO (Azure AD / Okta) + RBAC
-        * **Support:** 24/7 Dedicated Engineer
-        """)
-        st.metric("Price", "$4,950 / month", delta="Most Popular")
-        st.button("Active Enterprise Plan", key="btn_enterprise", type="primary")
-
-    st.markdown("---")
-    st.subheader("Secure Corporate Payment & Wire Gateway")
-    
-    pay_col1, pay_col2 = st.columns(2)
-    with pay_col1:
+    with col2:
+        st.subheader("Payment Methods")
         payment_method = st.radio("Select Payment Method", ["Stripe Corporate Card", "Wire Transfer / SWIFT Invoice"])
         if payment_method == "Stripe Corporate Card":
-            st.text_input("Corporate Card Number", value="**** **** **** 4242")
-            st.button("Update Card Details")
+            st.text_input("Cardholder Name", value=st.session_state.user_info["name"])
+            st.text_input("Card Number", value="•••• •••• •••• 4242")
         else:
-            st.info("Invoice Terms: Net 30 Days\n\nBank: J.P. Morgan Chase New York\n\nSWIFT/BIC: CHASUS33XXX")
+            st.info("SWIFT Routing Instructions dispatched to billing email.")
 
-    with pay_col2:
-        # -----------------------------------------------------------------------------
-# PAGE 6: USER FEEDBACK & REVIEWS
+# -----------------------------------------------------------------------------
+# PAGE 6: USER FEEDBACK MODULE
 # -----------------------------------------------------------------------------
 elif page == "⭐ User Feedback":
-    st.title("⭐ User Experience & Enterprise Feedback")
-    st.caption("We value your feedback! Help us improve our data sanitization & cloud pipeline features.")
+    st.title("⭐ User Feedback & Rating System")
+    st.caption("Provide feedback to improve internal processes and data engine features.")
 
     st.markdown("---")
-    
-    f_col1, f_col2 = st.columns([1, 2])
-    
-    with f_col1:
-        st.subheader("Rate Your Experience")
-        star_rating = st.feedback("stars")
-        
+
+    with st.form(key="user_feedback_form", clear_on_submit=True):
+        st.subheader("Submit Enterprise Feedback")
+
+        # 5-Star Rating Component
+        rating = st.feedback("stars")
+
+        # Category Dropdown
         category = st.selectbox(
-            "Feedback Category", 
+            "Feedback Category",
             [
-                "General Experience", 
-                "Data Sanitization Speed", 
-                "Cloud Connectors (S3/Snowflake)", 
-                "Security & Compliance", 
-                "Bug Report"
+                "🐛 Bug Report",
+                "💡 Feature Request",
+                "🚀 Performance & Speed",
+                "🎨 UI/UX Design",
+                "🔒 Security & Compliance",
+                "❓ General Feedback"
             ]
         )
-    
-    with f_col2:
-        st.subheader("Your Review")
-        feedback_text = st.text_area(
-            "Write your review (Up to 200 words):",
-            height=160,
-            max_chars=1200,
-            placeholder="Tell us what you liked or how we can improve..."
+
+        # 200 Words / Character Restricted Comment Box
+        comment = st.text_area(
+            "Detailed Feedback (Max 200 words)",
+            placeholder="Describe your feedback, bug details, or feature ideas here...",
+            max_chars=1200
         )
-        
-        if st.button("Submit Feedback", type="primary"):
-            if star_rating is not None:
-                st.balloons()  # Celebration Animation!
-                st.success(f"Thank you, {st.session_state.user_info['name']}! Your {star_rating + 1}-Star review for '{category}' has been recorded.")
-                
-                # Audit Log mein record add karna
-                st.session_state.audit_logs.append({
-                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "actor": st.session_state.user_info['name'],
-                    "action": f"Submitted Review ({star_rating + 1}/5 Stars - {category})",
-                    "rows_affected": 1,
-                    "status": "Success"
-                })
-            else:
-                st.warning("Please select a star rating before submitting!")
-        st.success("✅ **Automated Trial & Greeting Active:**\n\nEvery new tenant receives an instant automated welcome email via `global.data.sanitizer@gmail.com` with a 14-day fully featured enterprise trial unlocked.")
+
+        submit_btn = st.form_submit_button("Submit Feedback 🚀", type="primary")
+
+    if submit_btn:
+        word_count = len(comment.split())
+
+        if rating is None:
+            st.error("Please select a star rating before submitting.")
+        elif not comment.strip():
+            st.error("Please enter a comment describing your feedback.")
+        elif word_count > 200:
+            st.error(f"Comment exceeds word limit! You entered {word_count} words (Limit: 200 words).")
+        else:
+            current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            star_score = rating + 1
+
+            # Store Feedback
+            feedback_data = {
+                "Timestamp": current_timestamp,
+                "User": st.session_state.user_info["name"],
+                "Role": st.session_state.user_info["role"],
+                "Rating": f"{star_score} / 5 ⭐",
+                "Category": category,
+                "Comment": comment
+            }
+            st.session_state.feedback_list.append(feedback_data)
+
+            # Log to System Audit Logs
+            audit_entry = {
+                "timestamp": current_timestamp,
+                "actor": f"{st.session_state.user_info['name']} ({st.session_state.user_info['role']})",
+                "action": f"Submitted Feedback: {star_score} Stars ({category})",
+                "rows_affected": 0,
+                "status": "Logged",
+                "compliance": "System Feedback"
+            }
+            st.session_state.audit_logs.insert(0, audit_entry)
+
+            st.balloons()
+            st.success("Thank you! Your feedback has been recorded and logged into the audit pipeline.")
+
+    # Render Recorded Feedback History
+    if st.session_state.feedback_list:
+        st.markdown("---")
+        st.subheader("📋 Submitted Feedback Logs")
+        st.dataframe(pd.DataFrame(st.session_state.feedback_list), use_container_width=True)
