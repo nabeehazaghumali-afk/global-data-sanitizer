@@ -113,6 +113,7 @@ page = st.radio(
           "💳 Billing & Enterprise Plan",
           "⭐ User Feedback"  # <--- Yeh line add karein
         ]
+    ]
  
     st.markdown("---")
     st.caption("🔒 **Security Badges Active:**")
