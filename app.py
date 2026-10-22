@@ -114,6 +114,7 @@ page = st.radio(
             "⭐ User Feedback"
         ]
     )
+
     st.markdown("---")
     st.caption("🔒 **Security Badges Active:**")
     st.caption("✅ GDPR Ready | ✅ HIPAA Compliant | ✅ SOC2 Type II")
