@@ -103,7 +103,7 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("🧭 Navigation Menu")
     
-page = st.radio(
+        page = st.radio(
         "Go to",
         [
             "📁 Data Workspace & Cloud Ingestion",
@@ -115,9 +115,9 @@ page = st.radio(
         ]
     )
 
-    st.markdown("---")
-    st.caption("🔒 **Security Badges Active:**")
-    st.caption("✅ GDPR Ready | ✅ HIPAA Compliant | ✅ SOC2 Type II")
+            st.markdown("---")
+            st.caption("🔒 **Security Badges Active:**")
+            st.caption("✅ GDPR Ready | ✅ HIPAA Compliant | ✅ SOC2 Type II")
 
 # AUTOMATED APP INSTALLER BANNER (FOR EXTERNAL CLIENTS)
     st.markdown("---")
