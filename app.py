@@ -162,11 +162,57 @@ with main_col:
         st.title("🌐 Global Data Sanitizer & Currency Normalization Engine")
         st.caption("Designed for agile startups and strict banking pipelines with zero data persistence.")
 
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Security", "Zero Trust OIDC")
-        col2.metric("Currencies", "Multi-Currency Clean")
-        col3.metric("Retention", "Zero Persistence")
-        col4.metric("Compliance", "SOC2 / HIPAA / GDPR")
+        # Custom HTML Enterprise Metric Cards (Clean, Responsive, No Ellipsis)
+        st.markdown(
+            """
+            <style>
+            .metric-container {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .metric-card {
+                background-color: #1e293b;
+                border: 1px solid #334155;
+                border-radius: 8px;
+                padding: 14px 18px;
+                flex: 1;
+            }
+            .metric-title {
+                color: #94a3b8;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 4px;
+            }
+            .metric-value {
+                color: #f8fafc;
+                font-size: 16px;
+                font-weight: 700;
+            }
+            </style>
+            <div class="metric-container">
+                <div class="metric-card">
+                    <div class="metric-title">Security</div>
+                    <div class="metric-value">Zero Trust OIDC</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Currencies</div>
+                    <div class="metric-value">Multi-Clean</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Retention</div>
+                    <div class="metric-value">Zero Persistence</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Compliance</div>
+                    <div class="metric-value">SOC2 / HIPAA</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
         st.markdown("---")
 
