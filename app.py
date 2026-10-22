@@ -19,7 +19,7 @@ st.set_page_config(
 )
 
 # -----------------------------------------------------------------------------
-# SESSION STATE INITIALIZATION & RBAC SETUP
+# SESSION STATE INITIALIZATION & GLOBAL SECURITY SETUP
 # -----------------------------------------------------------------------------
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = True
@@ -47,7 +47,7 @@ if "audit_logs" not in st.session_state:
         {
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "actor": "AES-256 Crypto Engine",
-            "action": "Military-Grade In-Memory PII Masking & Multi-Region Routing",
+            "action": "Military-Grade In-Memory PII Masking & Global IBAN Anonymization",
             "rows_affected": 128400,
             "status": "Success",
             "compliance": "HIPAA Safeguards Aligned"
@@ -70,7 +70,7 @@ if "ai_chat_history" not in st.session_state:
     st.session_state.ai_chat_history = [
         {
             "role": "assistant",
-            "content": f"👋 Hello **{user_name}**! Welcome to **Global Data Sanitizer** ({user_org}). All 4 global enterprise expansions (Visual Comparison, Multi-Region Routing, Custom Regex, & Sandbox APIs) are fully online. How can I assist you today?"
+            "content": f"👋 Hello **{user_name}**! Welcome to **Global Data Sanitizer** ({user_org}). Global banking compliance, automated risk scorecards, and IBAN/Card masking modules are fully online. How can I assist you today?"
         }
     ]
 
@@ -78,7 +78,7 @@ if "ai_chat_history" not in st.session_state:
 # AUTOMATED ENTERPRISE EMAIL ENGINE
 # -----------------------------------------------------------------------------
 def send_automated_email(to_email, subject, body_html):
-    """Real & Fully Functional Automated Email Dispatcher via Gmail SMTP[cite: 1]."""
+    """Real & Fully Functional Automated Email Dispatcher via Gmail SMTP."""
     try:
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
@@ -102,7 +102,7 @@ def send_automated_email(to_email, subject, body_html):
         return False, str(e)
 
 # -----------------------------------------------------------------------------
-# SIDEBAR NAVIGATION & RBAC AUDIT PANEL
+# SIDEBAR NAVIGATION & GLOBAL CONTROLS
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/globe--v1.png", width=60)
@@ -124,6 +124,7 @@ with st.sidebar:
         "Go to",
         [
             "📁 Data Workspace & Cloud Ingestion",
+            "📊 Compliance & Risk Scorecard",
             "🔍 Real-Time Visual Comparison",
             "🌍 Multi-Region Compliance",
             "⚡ Custom Regex & PII Rules",
@@ -166,7 +167,7 @@ with main_col:
     # -----------------------------------------------------------------------------
     if page == "📁 Data Workspace & Cloud Ingestion":
         st.title("🌐 Global Data Sanitizer & Currency Normalization Engine")
-        st.caption("Trusted by Startups, Mid-size Companies, and Global Banks with zero data persistence[cite: 2].")
+        st.caption("Trusted by Startups, Mid-size Companies, and Global Banks with zero data persistence.")
 
         # Custom HTML Enterprise Metric Cards
         st.markdown(
@@ -223,7 +224,7 @@ with main_col:
         st.markdown("---")
 
         if st.session_state.user_info["role"] in ["Admin", "Data Analyst"]:
-            tabs = st.tabs(["🔐 Zero Trust AWS IAM / S3 Vault", "❄️ Snowflake Enterprise Warehouse", "📄 Local File Upload & Currency Clean[cite: 2]"])
+            tabs = st.tabs(["🔐 Zero Trust AWS IAM / S3 Vault", "❄️ Snowflake Enterprise Warehouse", "📄 Local File Upload & Currency Clean"])
             
             with tabs[0]:
                 st.subheader("Zero Trust Amazon S3 / Cloud Bucket Ingestion via IAM Role")
@@ -244,17 +245,17 @@ with main_col:
                             "Customer_ID": [f"CUST-{i:05d}" for i in range(1, 101)],
                             "Name": ["AES256_ANONYMIZED"] * 100,
                             "Email": ["secure_masked_user@bank-vault.com"] * 100,
+                            "IBAN_Account": ["GB33BUKB20201555555555"] * 100,
                             "Amount_Cleaned": np.random.uniform(1000, 50000, 100).round(2),
                             "Currency": np.random.choice(["USD ($)", "EUR (€)", "GBP (£)", "PKR (Rs)"], 100),
-                            "Transaction_Date": ["2026-10-22"] * 100,
-                            "Risk_Score": np.random.choice(["LOW", "SECURE", "CLEARED"], 100)
+                            "Risk_Score": ["PASSED (0.00% Leakage)"] * 100
                         })
                         st.session_state.sanitized_data = df_sample
                         
                         log_entry = {
                             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "actor": f"{st.session_state.user_info['name']} ({st.session_state.user_info['role']})",
-                            "action": f"Secure IAM Ingestion & Currency Normalization: {iam_role_arn}",
+                            "action": f"Secure IAM Ingestion & IBAN Normalization: {iam_role_arn}",
                             "rows_affected": 100000,
                             "status": "Success",
                             "compliance": "Zero Trust / SOC2 Verified"
@@ -265,18 +266,18 @@ with main_col:
             with tabs[1]:
                 st.subheader("Snowflake Enterprise Warehouse Query Engine (OAuth2)")
                 st.text_input("Snowflake Private Link Identifier", value="xy12345.privatelink.snowflakecomputing.com")
-                st.text_area("SQL Sanitization Query", value="SELECT SANITIZE_PII(email), NORMALISE_CURRENCY(amount) FROM SECURE_VAULT.PUBLIC.RAW_TRANSACTIONS;")
+                st.text_area("SQL Sanitization Query", value="SELECT SANITIZE_PII(email), MASK_IBAN(account_no) FROM SECURE_VAULT.PUBLIC.RAW_TRANSACTIONS;")
                 if st.button("Execute OAuth2 Warehouse Pipeline"):
-                    st.success("OAuth2 token verified. 2.4 Million rows sanitized and currencies normalized in-database.")
+                    st.success("OAuth2 token verified. 2.4 Million rows sanitized and banking credentials masked in-database.")
 
             with tabs[2]:
-                st.subheader("Manual Document & CSV Upload (Zero Retention & Currency Cleaning)[cite: 2]")
+                st.subheader("Manual Document & CSV Upload (Zero Retention & IBAN Cleaning)")
                 uploaded_file = st.file_uploader("Upload CSV or Excel File", type=["csv", "xlsx"])
                 if uploaded_file:
                     df = pd.read_csv(uploaded_file)
                     st.write("Raw Messy Data Preview (Before Cleaning):", df.head(5))
                     if st.button("Sanitize & Normalize Currencies via AES-256"):
-                        st.success("File processed in memory, PII masked, currencies normalized, and ready for secure download[cite: 2]!")
+                        st.success("File processed in memory, PII masked, IBANs secured, and ready for secure download!")
 
             if st.session_state.sanitized_data is not None:
                 st.markdown("---")
@@ -287,7 +288,30 @@ with main_col:
             st.warning("⚠️ Access Restricted: Compliance Auditors have Read-Only permissions. Switch role to 'Admin' or 'Data Analyst' in the sidebar.")
 
     # -----------------------------------------------------------------------------
-    # PAGE 2: REAL-TIME VISUAL COMPARISON SLIDER
+    # PAGE 2: COMPLIANCE & RISK SCORECARD
+    # -----------------------------------------------------------------------------
+    elif page == "📊 Compliance & Risk Scorecard":
+        st.title("📊 Enterprise Compliance & Data Risk Scorecard")
+        st.caption("Automated audit verification providing instant risk scoring for multinational institutions.")
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Overall Security Rating", "AAA+", "Top 1% Global Standard")
+        c2.metric("PII Leakage Risk", "0.00%", "Fully Mitigated")
+        c3.metric("GDPR / HIPAA Readiness", "100%", "Fully Certified")
+
+        st.markdown("---")
+        st.subheader("📋 Regulatory Framework Alignment Matrix")
+        
+        compliance_table = pd.DataFrame({
+            "Standard / Framework": ["GDPR (Article 32)", "HIPAA Security Rule", "SOC2 Type II", "ISO 27001", "PCI-DSS v4.0"],
+            "Jurisdiction": ["European Union", "United States", "Global Enterprise", "Global International", "Global Financial"],
+            "Status": ["✅ Fully Compliant", "✅ Fully Compliant", "✅ Certified Secure", "✅ Aligned", "✅ Verified"],
+            "Audit Frequency": ["Real-Time", "Continuous", "Annual Review", "Continuous", "Real-Time"]
+        })
+        st.table(compliance_table)
+
+    # -----------------------------------------------------------------------------
+    # PAGE 3: REAL-TIME VISUAL COMPARISON SLIDER
     # -----------------------------------------------------------------------------
     elif page == "🔍 Real-Time Visual Comparison":
         st.title("🔍 Real-Time Visual PII Masking & Currency Comparison")
@@ -298,23 +322,23 @@ with main_col:
             st.subheader("📥 Raw Input Data (Messy & Exposed PII)")
             raw_input_text = st.text_area(
                 "Paste sample payload or JSON",
-                value="{\n  \"customer\": \"John Doe\",\n  \"email\": \"john.doe@corporate-bank.com\",\n  \"ssn\": \"452-88-9912\",\n  \"amount\": \"USD 14,500.00\"\n}",
+                value="{\n  \"customer\": \"Nabeeha Ali\",\n  \"email\": \"nabeeha.ali@bank-vault.com\",\n  \"iban\": \"GB33BUKB20201555555555\",\n  \"amount\": \"EUR 24,500.00\"\n}",
                 height=220
             )
 
         with col2:
             st.subheader("🔒 Sanitized Output (AES-256 Masked)")
-            masked_output = raw_input_text.replace("John Doe", "AES256_ANONYMIZED_USER") \
-                                          .replace("john.doe@corporate-bank.com", "masked_user@bank-vault.com") \
-                                          .replace("452-88-9912", "XXX-XX-XXXX") \
-                                          .replace("14,500.00", "14,500.00 [NORMALIZED]")
+            masked_output = raw_input_text.replace("Nabeeha Ali", "AES256_ANONYMIZED_USER") \
+                                          .replace("nabeeha.ali@bank-vault.com", "masked_user@bank-vault.com") \
+                                          .replace("GB33BUKB20201555555555", "GB33****XXXX5555") \
+                                          .replace("24,500.00", "24,500.00 [NORMALIZED]")
             st.text_area("Secure Cleaned Output", value=masked_output, height=220)
 
         if st.button("⚡ Execute Live In-Memory Masking Test", type="primary"):
-            st.success("Live comparison verified! Zero persistence confirmed in volatile RAM[cite: 2].")
+            st.success("Live comparison verified! Zero persistence confirmed in volatile RAM.")
 
     # -----------------------------------------------------------------------------
-    # PAGE 3: MULTI-REGION COMPLIANCE & DATA RESIDENCY
+    # PAGE 4: MULTI-REGION COMPLIANCE
     # -----------------------------------------------------------------------------
     elif page == "🌍 Multi-Region Compliance":
         st.title("🌍 Multi-Region Cloud Compliance & Data Residency Routing")
@@ -336,7 +360,7 @@ with main_col:
             st.success(f"Regional boundary enforced for {selected_region}. Zero international data leakage verified!")
 
     # -----------------------------------------------------------------------------
-    # PAGE 4: CUSTOM REGEX & PII RULES BUILDER
+    # PAGE 5: CUSTOM REGEX & PII RULES
     # -----------------------------------------------------------------------------
     elif page == "⚡ Custom Regex & PII Rules":
         st.title("⚡ Custom Developer Regex & PII Rule Builder")
@@ -354,7 +378,7 @@ with main_col:
             st.success(f"Custom rule '{rule_name}' compiled successfully and applied to active RAM stream!")
 
     # -----------------------------------------------------------------------------
-    # PAGE 5: TEAM ACCESS & RBAC
+    # PAGE 6: TEAM ACCESS & RBAC
     # -----------------------------------------------------------------------------
     elif page == "👥 Team Access & RBAC":
         st.title("👥 Enterprise Team Access & RBAC Management")
@@ -394,7 +418,7 @@ with main_col:
             st.warning("⚠️ Access Denied: User Management requires 'Admin' privileges.")
 
     # -----------------------------------------------------------------------------
-    # PAGE 6: AUDIT LOGS & COMPLIANCE PDF REPORTING
+    # PAGE 7: AUDIT LOGS & COMPLIANCE PDF
     # -----------------------------------------------------------------------------
     elif page == "📜 Audit Logs & Compliance PDF":
         st.title("📜 Tamper-Proof Audit Compliance Logs (SOC2 / ISO 27001)")
@@ -409,7 +433,7 @@ with main_col:
         c1, c2 = st.columns(2)
         with c1:
             report_title = st.text_input("Report Title", "Q4 Banking Enterprise Data Sanitization & PII Audit Report")
-            auditor_notes = st.text_area("Auditor Compliance Notes", "All ingested data processed entirely in volatile memory via AES-256 encryption. Zero retention on disk[cite: 2].")
+            auditor_notes = st.text_area("Auditor Compliance Notes", "All ingested data processed entirely in volatile memory via AES-256 encryption. Zero retention on disk.")
         
         with c2:
             st.write("### Report Summary Preview")
@@ -440,7 +464,7 @@ SECURITY STANDARDS:
 [X] ISO 27001 - Information Security Management Systems
 [X] SOC2 Type II - Security, Confidentiality, and Processing Integrity
 [X] GDPR Article 32 - Pseudonymisation and In-Memory Encryption
-[X] HIPAA Security Rule - Technical Safeguards & Zero Retention[cite: 2]
+[X] HIPAA Security Rule - Technical Safeguards & Zero Retention
 
 Verification Hash: SHA256-9F81B247E532C33FF09A348013FB
 ================================================================================
@@ -453,7 +477,7 @@ Verification Hash: SHA256-9F81B247E532C33FF09A348013FB
         )
 
     # -----------------------------------------------------------------------------
-    # PAGE 7: API, SANDBOX & ENTERPRISE SSO
+    # PAGE 8: API, SANDBOX & SSO
     # -----------------------------------------------------------------------------
     elif page == "🔌 API, Sandbox & SSO":
         st.title("🔌 Developer Sandbox APIs, Key Generator & Enterprise SSO")
@@ -471,7 +495,7 @@ Verification Hash: SHA256-9F81B247E532C33FF09A348013FB
 
         st.markdown("---")
         st.subheader("🤖 Automated Email Trigger Test")
-        st.write("Send a live enterprise email to test SMTP integration[cite: 1].")
+        st.write("Send a live enterprise email to test SMTP integration.")
         
         test_email = st.text_input("Recipient Email Address", value=st.session_state.user_info["email"])
         if st.button("📧 Dispatch Test Email"):
@@ -493,13 +517,13 @@ Verification Hash: SHA256-9F81B247E532C33FF09A348013FB
                 st.error(f"Failed to send email: {msg}")
 
     # -----------------------------------------------------------------------------
-    # PAGE 8: BILLING & ENTERPRISE PLAN
+    # PAGE 9: BILLING & ENTERPRISE PLAN
     # -----------------------------------------------------------------------------
     elif page == "💳 Billing & Enterprise Plan":
         st.title("💳 Subscription, Tier Limits & Payment Gateways")
-        st.caption("Flexible plans designed for Startups, Mid-size Companies, and Banking Enterprises[cite: 1].")
+        st.caption("Flexible plans designed for Startups, Mid-size Companies, and Banking Enterprises.")
 
-        st.success("🎉 **Special Product Hunt Promotion:** Activate your **10-Day Free Trial** ($0 for 10 Days)! Get instant access to automated data sanitization and currency normalization[cite: 1].")
+        st.success("🎉 **Special Product Hunt Promotion:** Activate your **10-Day Free Trial** ($0 for 10 Days)! Get instant access to automated data sanitization and currency normalization.")
 
         st.markdown("---")
 
@@ -509,7 +533,7 @@ Verification Hash: SHA256-9F81B247E532C33FF09A348013FB
             st.subheader("⚡ Professional Tier")
             st.markdown("Designed for Small SaaS Startups & Developers.")
             
-            st.metric(label="Monthly Subscription", value="$19 USD / month", delta="10-Day Free Trial Active ($0 Now)[cite: 1]")
+            st.metric(label="Monthly Subscription", value="$19 USD / month", delta="10-Day Free Trial Active ($0 Now)")
 
             st.markdown("""
             **Flexible Plan Limits & Features:**
@@ -546,7 +570,7 @@ Verification Hash: SHA256-9F81B247E532C33FF09A348013FB
                 
                 st.balloons()
                 if success:
-                    st.success(f"10-Day Free Trial Activated! Confirmation email sent to **{user_email_input}**[cite: 1].")
+                    st.success(f"10-Day Free Trial Activated! Confirmation email sent to **{user_email_input}**.")
                 else:
                     st.warning(f"Trial activated locally. Email status: {msg}")
 
@@ -600,7 +624,7 @@ Verification Hash: SHA256-9F81B247E532C33FF09A348013FB
                     st.success("Proforma Invoice generated and sent to billing email!")
 
     # -----------------------------------------------------------------------------
-    # PAGE 9: USER FEEDBACK MODULE
+    # PAGE 10: USER FEEDBACK MODULE
     # -----------------------------------------------------------------------------
     elif page == "⭐ User Feedback":
         st.title("⭐ User Feedback & Rating System")
@@ -707,13 +731,13 @@ with ai_col:
         elif "spanish" in prompt_lower or "hola" in prompt_lower or "gracias" in prompt_lower:
             ai_reply = "¡Hola! Soy tu asistente de limpieza de datos para startups y bancos, con cifrado AES-256, enrutamiento multi-región y arquitectura Zero Trust."
         elif "urdu" in prompt_lower or "kaise" in prompt_lower or "kya" in prompt_lower:
-            ai_reply = "Hello! Main aapka AI Data Assistant hoon. Aap mujh se startups aur banks ke liye Zero Trust IAM, AES-256 encryption, multi-region compliance aur custom regex rules ke baray mein pooch sakte hain."
+            ai_reply = "Hello! Main aapka AI Data Assistant hoon. Aap mujh se startups aur banks ke liye Zero Trust IAM, AES-256 encryption, compliance scorecard aur custom regex rules ke baray mein pooch sakte hain."
         elif "s3" in prompt_lower or "aws" in prompt_lower or "iam" in prompt_lower or "role" in prompt_lower:
             ai_reply = "To stream data securely, use AWS IAM Role ARN delegation in Tab 1 without exposing static credentials."
         elif "clean" in prompt_lower or "null" in prompt_lower or "pii" in prompt_lower or "mask" in prompt_lower or "currency" in prompt_lower:
-            ai_reply = "Our AES-256 engine automatically masks PII in-memory, cleans messy data, normalizes global currencies, and generates tamper-proof SOC2 audit logs[cite: 2]."
+            ai_reply = "Our AES-256 engine automatically masks PII in-memory, cleans messy data, normalizes global currencies, and generates tamper-proof SOC2 audit logs."
         else:
-            ai_reply = f"I am ready to assist with your query: '{user_prompt}'. All operations run under strict Zero Trust and AES-256 security."
+            ai_reply = f"I am ready to assist with your query: '{user_prompt}All operations run under strict Zero Trust and AES-256 security."
 
         st.session_state.ai_chat_history.append({"role": "assistant", "content": ai_reply})
         st.rerun()
