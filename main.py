@@ -1,5 +1,6 @@
 import io
 import re
+import stripe
 from fastapi import FastAPI, HTTPException, Security, Depends, UploadFile, File
 from fastapi.security.api_key import APIKeyHeader
 from pydantic import BaseModel
@@ -36,12 +37,12 @@ def real_regex_masking(text: str) -> str:
     email_pattern = r'([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)'
     text = re.sub(email_pattern, "[MASKED_EMAIL]", text)
 
-    # 2. CNIC / Phone Number Masking (Pakistani & International formats)
-    cnic_phone_pattern = r'\b(?:\d{4}[-\s]?\d{7}|\d{3}[-\s]?\d{3}[-\s]?\d{4}|\+?[0-9]{10,13})\b'
+    # 2. CNIC / Phone Number Masking
+    cnic_phone_pattern = r'\b(?:\d{5}-\d{7}-\d|\d{4}-\d{7}-\d|\d{11}|\+\d{10,12})\b'
     text = re.sub(cnic_phone_pattern, "[MASKED_ID]", text)
 
     # 3. Credit Card Masking
-    card_pattern = r'\b(?:\d[ -]*?){14,16}\b'
+    card_pattern = r'\b(?:\d[ -]*?){13,16}\b'
     text = re.sub(card_pattern, "[MASKED_CARD]", text)
 
     return text
@@ -75,7 +76,7 @@ async def sanitize_file_endpoint(file: UploadFile = File(...), api_key: str = De
         df = pd.read_csv(io.BytesIO(content))
         for col in df.select_dtypes(include=['object']).columns:
             df[col] = df[col].astype(str).apply(real_regex_masking)
-        
+
         return {
             "status": "SUCCESS",
             "filename": file.filename,
@@ -93,6 +94,35 @@ async def sanitize_file_endpoint(file: UploadFile = File(...), api_key: str = De
             "memory_wiped": True
         }
 
+# --- Real-World Stripe Payment Integration ---
+stripe.api_key = "sk_test_your_stripe_secret_key_here"
+
+@app.post("/v1/create-checkout-session")
+def create_checkout_session(api_key: str = Depends(verify_api_key)):
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': 'Global Data Sanitizer - Professional Tier ($19/month)',
+                    },
+                    'unit_amount': 1900,
+                    'recurring': {
+                        'interval': 'month',
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='subscription',
+            success_url='https://global-data-sanitizer.streamlit.app/?success=true',
+            cancel_url='https://global-data-sanitizer.streamlit.app/?canceled=true',
+        )
+        return {"checkout_url": checkout_session.url}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @app.get("/health")
 def health_check():
-    return {"health": "OK", "memory_persistence": "ZERO"}
+    return {"health": "OK", "memory_persistence": "Zero"}
