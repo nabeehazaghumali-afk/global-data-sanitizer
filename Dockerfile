@@ -5,12 +5,13 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Install system dependencies & curl for healthchecks
-RUN apt-get update && apt-get install -y \
+RUN apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends \
     build-essential \
     curl \
-    software-properties-common \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+    git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install python dependencies
 COPY requirements.txt .
