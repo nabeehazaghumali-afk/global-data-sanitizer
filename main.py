@@ -15,14 +15,13 @@ app = FastAPI(
 API_KEY_NAME = "X-Enterprise-API-Key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
 
-# Valid Enterprise API Keys for testing
-VALID_API_KEYS = {"gds_live_99812473829103482", "gds_sandbox_33492018475892014"}
+# Valid enterprise API Keys for Testing
+VALID_API_KEYS = {"nabeeha-key-2026"}
 
 def verify_api_key(api_key: str = Security(api_key_header)):
     if api_key in VALID_API_KEYS:
         return api_key
     raise HTTPException(status_code=403, detail="Unauthorized: Invalid or Expired Enterprise API Key.")
-
 class SanitizationRequest(BaseModel):
     text_payload: str
     region: str = "eu-central-1"
