@@ -27,4 +27,3 @@ HEALTHCHECK CMD curl --fail http://localhost:8000/health || exit 1
 
 # Command to run production server via Uvicorn (FastAPI)
 ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-```[cite: 4]
