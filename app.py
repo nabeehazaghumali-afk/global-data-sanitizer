@@ -268,16 +268,15 @@ with main_col:
                         time.sleep(2)
                         df_sample = pd.DataFrame({
                             "Customer_ID": [f"CUST-{i:04d}" for i in range(1, 101)],
-                            "Name": ["NABEENA ANONYMIZED" * 100],
-                            "Email": ["secure_masked_user@bank-vault.com" * 100],
-                            "IBAN_Account": ["PK68MEZN0000000000000000" * 100],
+                            "Name": ["NABEENA ANONYMIZED" for _ in range(100)],
+                            "Email": ["secure_masked_user@bank-vault.com" for _ in range(100)],
+                            "IBAN_Account": ["PK68MEZN0000000000000000" for _ in range(100)],
                             "Amount_Cleared": np.random.uniform(1000, 500000, 100).round(2),
                             "Currency": np.random.choice(["USD ($)", "EUR (€)", "GBP (£)", "PKR (Rs)"], 100),
-                            "Risk_Score": [99.9542 (0.045 Leakage)] * 100
+                            "Risk_Score": [99.9542 for _ in range(100)]
                         })
                         st.session_state.sanitized_data = df_sample
                         
-                        # Log to database/session
                         log_entry = {
                             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                             "actor": f"{st.session_state.user_info['name']} ({st.session_state.user_info['role']})",
@@ -369,7 +368,7 @@ with main_col:
     # --------------------------------------------------------------------------
     # PAGE 3: REAL-TIME VISUAL COMPARISON
     # --------------------------------------------------------------------------
-    elif page == "🔍 Real-Time Visual PII Masking & Currency Comparison":
+    elif page == "🔍 Real-Time Visual Comparison":
         st.title("🔍 Real-Time Visual PII Masking & Currency Comparison")
         st.caption("Inspect raw unstructured text/JSON and watch instant AES-256 in-memory sanitization.")
 
@@ -409,7 +408,6 @@ with main_col:
         st.info(f"📍 **Active Routing Node:** `{selected_region}` | **Data Residency Status:** 100% In-Region Volatile Memory. | **Cross-Border Transfer:** Blocked by cryptographic boundary rules.")
 
         if st.button("🛡️ Verify Regional Compliance Lock"):
-            # Call backend AWS endpoint if configured
             try:
                 payload = {"region": selected_region.split(" ")[0], "iam_role_arn": "arn:aws:iam::123456789012:role/DataSanitizerRole"}
                 res = requests.post(f"{API_URL}/v1/configure-aws-region", json=payload, headers=HEADERS, timeout=3)
@@ -485,7 +483,6 @@ with main_col:
         st.title("📋 Audit Logs & Compliance PDF")
         st.caption("Cryptographically secured execution history verifying zero data retention and AES-256 masking.")
 
-        # Fetch logs from FastAPI backend if available, fallback to session state
         try:
             res = requests.get(f"{API_URL}/v1/audit-trail", headers=HEADERS, timeout=3)
             if res.status_code == 200:
