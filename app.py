@@ -253,7 +253,7 @@ with main_col:
 
             with tabs[0]:
                 st.subheader("Zero Trust Amazon S3 / Cloud Bucket Ingestion via IAM Role")
-                st.write("Banks never share static static keys. Authenticate securely using AWS IAM Role Delegation and OIDC Web Identity Federation.")
+                st.write("Banks never share static keys. Authenticate securely using AWS IAM Role Delegation and OIDC Web Identity Federation.")
 
                 c1, c2 = st.columns(2)
                 with c1:
@@ -483,6 +483,7 @@ with main_col:
         st.title("📋 Audit Logs & Compliance PDF")
         st.caption("Cryptographically secured execution history verifying zero data retention and AES-256 masking.")
 
+        # Dynamically fetching live logs from FastAPI backend SQLite DB
         try:
             res = requests.get(f"{API_URL}/v1/audit-trail", headers=HEADERS, timeout=3)
             if res.status_code == 200:
