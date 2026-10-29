@@ -147,7 +147,7 @@ with st.sidebar:
     st.subheader("📦 On-Premise & Desktop Setup")
     st.markdown(
         """
-        <div style="background-color: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+        <div style="background-color: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #10b981;">
             <p style="color: #e2e8f0; font-size: 13px; margin-bottom: 8px;">
                 <b>Bank On-Premise Deployment (Docker / K8s):</b>
             </p>
@@ -171,7 +171,7 @@ with main_col:
         st.title("🌐 Global Data Sanitizer & Currency Normalization Engine")
         st.caption("Trusted by Startups, Mid-size Companies, and Global Banks with zero data persistence.")
 
-        # Custom HTML Enterprise Metric Cards
+        # Custom HTML Enterprise Metric Cards with Green Border Accent
         st.markdown(
             """
             <style>
@@ -182,13 +182,13 @@ with main_col:
             }
             .metric-card {
                 background-color: #1e293b;
-                border: 1px solid #334155;
+                border: 1px solid #10b981;
                 border-radius: 8px;
                 padding: 14px 18px;
                 flex: 1;
             }
             .metric-title {
-                color: #94a3b8;
+                color: #34d399;
                 font-size: 12px;
                 font-weight: 600;
                 text-transform: uppercase;
