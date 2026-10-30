@@ -1,7 +1,11 @@
+fastapi
+uvicorn
 streamlit
 pandas
 pydantic
 requests
 python-multipart
-fastapi
-uvicorn
+boto3
+stripe
+sqlalchemy
+psycopg2-binary
