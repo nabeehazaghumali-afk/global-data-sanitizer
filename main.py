@@ -4,8 +4,12 @@ import sqlite3
 import string
 import base64
 import boto3
-from fastapi import FastAPI, HTTPException, Security, Depends, status
+import secrets
+from fastapi import FastAPI, HTTPException, Security, Depends, status, Request
 from fastapi.security.api_key import APIKeyHeader
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 from pydantic import BaseModel
 import pandas as pd
 
@@ -18,9 +22,22 @@ except Exception:
 
 app = FastAPI(
     title="Global Enterprise Data Sanitizer & Currency Normalization",
-    version="2.2.0",
-    description="Zero Trust PII Masking, PostgreSQL/SQLite Persistence & AWS KMS Enterprise Engine."
+    version="2.3.0",
+    description="Zero Trust PII Masking, PostgreSQL/SQLite Persistence, Security Headers & AWS KMS Enterprise Engine."
 )
+
+# Security Headers Middleware for VAPT & Enterprise Compliance
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response: Response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Content-Security-Policy"] = "default-src 'self'"
+        return response
+
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Database configuration supporting both SQLite and PostgreSQL via environment variables
 DATABASE_URL = os.getenv("DATABASE_URL", "enterprise_data.db")
@@ -226,7 +243,7 @@ def log_compliance_event(event_type: str, details: str):
 def read_root():
     return {
         "status": "ONLINE",
-        "security": "Zero Trust OIDC / AES-256 / PostgreSQL & SQLite Persistence",
+        "security": "Zero Trust OIDC / AES-256 / PostgreSQL & SQLite Persistence with Security Headers",
         "engine": "Dynamic Real-Time Audit Engine Operational"
     }
 
@@ -248,7 +265,6 @@ def sanitize_data_endpoint(payload: SanitizationRequest, api_key: str = Depends(
 
 @app.post("/v1/keys/generate")
 def generate_api_key(api_key: str = Depends(verify_api_key)):
-    import secrets
     new_key = f"gds_live_{secrets.token_hex(16)}"
     conn = get_db_connection()
     cursor = conn.cursor()
