@@ -1,11 +1,57 @@
 version: '3.8'
 
 services:
+  # Enterprise PostgreSQL Database Service (Replaces local SQLite for production)
+  enterprise-db:
+    image: postgres:15-alpine
+    container_name: enterprise_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: gds_admin
+      POSTGRES_PASSWORD: ${DB_SECURE_PASSWORD:-ChangeThisSecureProductionPassword123!}
+      POSTGRES_DB: enterprise_sanitizer_prod
+    volumes:
+      - postgres_secure_data:/var/lib/postgresql/data
+    networks:
+      - enterprise-internal-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gds_admin -d enterprise_sanitizer_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Core FastAPI Sanitization Engine
   sanitizer-api:
     build: .
-    container_name: sanitizer-app
+    container_name: sanitizer-enterprise-app
+    restart: always
     ports:
       - "8000:8000"
     environment:
       - ENVIRONMENT=production
-    restart: always
+      - DATABASE_URL=postgresql://gds_admin:ChangeThisSecureProductionPassword123!@enterprise-db:5432/enterprise_sanitizer_prod
+      - ALLOWED_HOSTS=127.0.0.1,localhost
+    depends_on:
+      enterprise-db:
+        condition: service_healthy
+    networks:
+      - enterprise-internal-net
+      - enterprise-external-net
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+volumes:
+  postgres_secure_data:
+    driver: local
+
+networks:
+  enterprise-internal-net:
+    internal: true  # Isolated network for database security (Zero Trust)
+  enterprise-external-net:
+    driver: bridge
