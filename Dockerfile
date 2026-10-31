@@ -1,4 +1,4 @@
-# Use official lightweight Python slim image
+# Use official lightweight Python image
 FROM python:3.10-slim
 
 # Set working directory inside container
