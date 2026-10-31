@@ -355,6 +355,9 @@ def configure_aws_region(payload: AuthConfigPayload, api_key: str = Depends(veri
         "iam_role_status": f"SUCCESS_CONNECTED (Account: {aws_account_id})",
         "aes_encryption": f"AES-256-GCM (AK Region: {payload.region})",
         "data_sovereignty": f"Strict data isolation enforced in {payload.region}"
+      # File ke bilkul aakhir mein (Kisi function ke andar nahi!)
+from stripe_integration import router as payments_router
+app.include_router(payments_router)
     }
 
 @app.get("/health")
