@@ -1,3 +1,5 @@
+import './globals.css';
+
 export const metadata = {
   title: 'Global Data Sanitizer & Currency Normalization',
   description: 'Enterprise Zero Trust PII Masking & Compliance Engine',
