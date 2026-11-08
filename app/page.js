@@ -4,7 +4,7 @@ import { useState } from 'react';
 export default function Home() {
   const [activeTab, setActiveTab] = useState(0);
   const [messages, setMessages] = useState([
-    { sender: 'ai', text: 'Hello! I am your Enterprise Multilingual AI Assistant. Aap mujhse kisi bhi language (English, Urdu, etc.) mein data masking ya compliance ke baray mein pooch sakte hain.' }
+    { sender: 'ai', text: 'Hello! I am your Enterprise Multilingual AI Assistant. I can assist you with data masking, PII compliance, and currency normalization in any language (English, German, Spanish, Urdu, French, etc.). How can I help you today?' }
   ]);
   const [inputMessage, setInputMessage] = useState('');
 
@@ -16,16 +16,25 @@ export default function Home() {
     setMessages(prev => [...prev, { sender: 'user', text: userMsg }]);
     setInputMessage('');
 
-    // Simulate multilingual AI response
+    // Dynamic Multilingual Response Logic
     setTimeout(() => {
-      let reply = "I have processed your query securely under Zero Trust protocols.";
-      if (userMsg.toLowerCase().includes('urdu') || userMsg.includes('kese') || userMsg.includes('kya')) {
+      let reply = "I have processed your query securely under Zero Trust compliance protocols.";
+      const lower = userMsg.toLowerCase();
+
+      if (lower.includes('hallo') || lower.includes('danke') || lower.includes('deutsch') || lower.includes('guten')) {
+        reply = "Guten Tag! Ich kann Ihre Daten gemäß DSGVO und HIPAA sicher maskieren und anonymisieren.";
+      } else if (lower.includes('hola') || lower.includes('gracias') || lower.includes('espanol') || lower.includes('español')) {
+        reply = "¡Hola! Puedo ayudarle a enmascarar y proteger sus datos confidenciales según las normativas globales.";
+      } else if (lower.includes('bonjour') || lower.includes('merci') || lower.includes('francais')) {
+        reply = "Bonjour! Je peux vous aider à masquer et sécuriser vos données personnelles.";
+      } else if (lower.includes('kaise') || lower.includes('kya') || lower.includes('urdu') || lower.includes('kar')) {
         reply = "Main aapke data ko secure tareeqay se mask aur sanitize karne mein poori madad kar sakta hoon. Koi payload paste karein!";
-      } else if (userMsg.toLowerCase().includes('pii')) {
-        reply = "PII masking ensures credit cards, emails, and phone numbers are securely replaced with encrypted tokens.";
+      } else if (lower.includes('pii') || lower.includes('mask') || lower.includes('sanitize')) {
+        reply = "PII masking dynamically redacts credit cards, emails, SSNs, and phone numbers before storing or processing.";
       }
+
       setMessages(prev => [...prev, { sender: 'ai', text: reply }]);
-    }, 1000);
+    }, 800);
   };
 
   const modules = [
@@ -56,7 +65,6 @@ export default function Home() {
       </div>
 
       <div className="flex-1 space-y-6">
-        {/* Top Header & Tab Switcher Bar */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900/50 border border-slate-800 p-6 rounded-2xl backdrop-blur-sm gap-4">
           <div>
             <span className="text-xs uppercase tracking-widest text-indigo-400 font-semibold">Active Module</span>
@@ -76,10 +84,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Tab 0: Overview & AI Assistant Chat */}
         {activeTab === 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Box: Payload Input */}
             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Payload Input & Sanitizer</h3>
@@ -93,17 +99,15 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Right Box: Multilingual AI Assistant Chat Box */}
             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between h-[420px]">
               <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800">
                 <div className="flex items-center space-x-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
                   <h3 className="text-md font-semibold text-white">Multilingual AI Assistant</h3>
                 </div>
-                <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20">Urdu / English Enabled</span>
+                <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20">All Languages Enabled</span>
               </div>
 
-              {/* Chat Messages Scroll Area */}
               <div className="flex-1 overflow-y-auto space-y-3 pr-2 font-sans text-sm">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -114,13 +118,12 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* Chat Input Form */}
               <form onSubmit={handleSendMessage} className="mt-3 flex gap-2 pt-3 border-t border-slate-800">
                 <input 
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Type in English, Urdu, etc..."
+                  placeholder="Type in any language (English, German, Spanish, Urdu...)..."
                   className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
                 />
                 <button type="submit" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl transition">
@@ -131,7 +134,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Other Tabs placeholders */}
         {activeTab > 0 && (
           <div className="bg-slate-900 border border-slate-800 p-12 rounded-2xl text-center">
             <div className="w-16 h-16 bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl font-bold">
