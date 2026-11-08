@@ -18,7 +18,6 @@ function DashboardContent() {
   ]);
   const [inputMessage, setInputMessage] = useState('');
 
-  // PWA Install Event
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
@@ -56,17 +55,6 @@ function DashboardContent() {
     const file = new Blob([sanitizedResult], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
     element.download = `sanitized_payload.json`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
-
-  const downloadDockerFile = () => {
-    const element = document.createElement("a");
-    const dockerContent = `version: '3.8'\nservices:\n  sanitizer-app:\n    image: nexus/global-data-sanitizer:latest\n    ports:\n      - "8000:8000"\n    environment:\n      - ZERO_TRUST_MODE=true`;
-    const file = new Blob([dockerContent], { type: 'text/yaml' });
-    element.href = URL.createObjectURL(file);
-    element.download = `Dockerfile`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -118,25 +106,27 @@ function DashboardContent() {
         </button>
       </div>
 
-      {/* Trust Badges */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl text-center">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Security</span>
-          <span className="text-sm font-bold text-white">Zero Trust OIDC</span>
+      {/* Trust Badges - ONLY shown on Overview Page (Tab 0) */}
+      {activeTab === 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl text-center">
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Security</span>
+            <span className="text-sm font-bold text-white">Zero Trust OIDC</span>
+          </div>
+          <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl text-center">
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Currencies</span>
+            <span className="text-sm font-bold text-white">Multi-Clean</span>
+          </div>
+          <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl text-center">
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Retention</span>
+            <span className="text-sm font-bold text-white">Zero Persistence</span>
+          </div>
+          <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl text-center">
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Compliance</span>
+            <span className="text-sm font-bold text-white">SOC2 / HIPAA</span>
+          </div>
         </div>
-        <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl text-center">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Currencies</span>
-          <span className="text-sm font-bold text-white">Multi-Clean</span>
-        </div>
-        <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl text-center">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Retention</span>
-          <span className="text-sm font-bold text-white">Zero Persistence</span>
-        </div>
-        <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl text-center">
-          <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Compliance</span>
-          <span className="text-sm font-bold text-white">SOC2 / HIPAA</span>
-        </div>
-      </div>
+      )}
 
       {/* MODULE 0 */}
       {activeTab === 0 && (
@@ -298,14 +288,62 @@ function DashboardContent() {
       {/* MODULE 8: Billing & Enterprise Plan */}
       {activeTab === 8 && (
         <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6">
-          <h3 className="text-xl font-bold text-white">Subscription, Tier Limits & Payment Gateways</h3>
+          <div>
+            <h3 className="text-xl font-bold text-white mb-1">Subscription, Tier Limits & Payment Gateways</h3>
+            <p className="text-xs text-slate-400">Flexible plans designed for Startups, Mid-size Companies, and Banking Enterprises.</p>
+          </div>
+
           <div className="p-4 bg-emerald-950/30 border border-emerald-500/20 rounded-xl text-xs text-emerald-300">
-            Special Product Hunt Promotion: 10-Day Free Trial Active ($0 for 10 Days)
+            🎁 Special Product Hunt Promotion: Activate your 10-Day Free Trial ($0 for 10 Days)! Get instant access to automated data sanitization and currency normalization.
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div className="bg-slate-950 border border-indigo-500/30 p-6 rounded-2xl flex flex-col justify-between space-y-4">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-indigo-400 font-semibold block mb-1">Professional Tier</span>
+                <div className="text-3xl font-extrabold text-white">$19 <span className="text-xs text-slate-400 font-normal">USD / month</span></div>
+                <p className="text-xs text-slate-400 mt-2">Designed for Small SaaS Startups & Developers.</p>
+                <div className="mt-4 space-y-2 text-xs text-slate-300">
+                  <div>✓ 10-Day Free Trial Active ($0 Now)</div>
+                  <div>✓ Usage Limit: Up to 1,000,000 Rows / Month</div>
+                  <div>✓ Cloud Integration: AWS S3 / IAM Role Secure Stream</div>
+                  <div>✓ PII Sanitization: AES-256 Masking & Anonymization</div>
+                  <div>✓ Currency Suite: All Major World Currencies Supported</div>
+                  <div>✓ Support: Email & In-App Multilingual AI Assistant</div>
+                </div>
+              </div>
+              <div className="pt-4 border-t border-slate-800 space-y-2">
+                <input type="email" defaultValue="global.data.sanitizer@gmail.com" className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300" />
+                <button className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition">
+                  Start 10-Day Free Trial ($0)
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between space-y-4">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-emerald-400 font-semibold block mb-1">Enterprise & Bank On-Premise</span>
+                <div className="text-3xl font-extrabold text-white">Custom <span className="text-xs text-slate-400 font-normal">/ SLA</span></div>
+                <p className="text-xs text-slate-400 mt-2">For Banks, Fintech Agencies, and Multinationals.</p>
+                <div className="mt-4 space-y-2 text-xs text-slate-300">
+                  <div>✓ Zero Persistence Certified</div>
+                  <div>✓ Unlimited Processing: Unlimited Rows & Parallel Streams</div>
+                  <div>✓ On-Premise Deployment: Dedicated Docker & Kubernetes Helm Charts</div>
+                  <div>✓ SLA Guarantee: 99.99% Uptime Guarantee with Custom DPA</div>
+                  <div>✓ Dedicated Support: 24/7 Security Operations Team</div>
+                </div>
+              </div>
+              <div className="pt-4 border-t border-slate-800">
+                <button className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition">
+                  Request Enterprise On-Premise...
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* MODULE 9: User Feedback / Security Settings */}
+      {/* MODULE 9: User Feedback */}
       {activeTab === 9 && (
         <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6">
           <h3 className="text-xl font-bold text-white">User Feedback & Enterprise Reviews</h3>
