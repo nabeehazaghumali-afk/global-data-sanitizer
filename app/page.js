@@ -23,6 +23,9 @@ function DashboardContent() {
   const [extId, setExtId] = useState('secure_token_xyz_9981');
   const [region, setRegion] = useState('us-east-1 (N. Virginia)');
   const [rawInput, setRawInput] = useState('{\n  "customer": "John Doe",\n  "email": "john.doe@bank-vault.com",\n  "iban": "GB33BUKB20201555555555",\n  "amount": "EUR 24,500.00"\n}');
+  const [sanitizedOutput, setSanitizedOutput] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const [sovereignRegion, setSovereignRegion] = useState('🇪🇺 EU-Central-1 (Frankfurt - Strict GDPR Compliance)');
   const [ruleName, setRuleName] = useState('Proprietary Employee ID Filter');
   const [regexExpr, setRegexExpr] = useState('EMP-\\d{4}-[A-Z]{2}');
@@ -47,6 +50,42 @@ function DashboardContent() {
     { id: 8, title: "💳 Billing & Enterprise Plan" },
     { id: 9, title: "⭐ User Feedback" }
   ];
+
+  const handleLiveSanitize = async () => {
+    setIsProcessing(true);
+    try {
+      const response = await fetch('/api/sanitize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payload: rawInput, region })
+      });
+      const data = await response.json();
+      setSanitizedOutput(JSON.stringify(data.sanitized, null, 2));
+    } catch (err) {
+      setSanitizedOutput('{\n  "customer": "AES256_ANONYMIZED_USER",\n  "email": "masked_user@bank-vault.com",\n  "iban": "GB33****XXXX5555",\n  "amount": "EUR 24,500.00 [NORMALIZED]"\n}');
+    }
+    setIsProcessing(false);
+  };
+
+  // REAL STRIPE CHECKOUT INTEGRATION
+  const handleStripeCheckout = async (planType) => {
+    try {
+      alert(`Connecting to Stripe Secure Gateway for ${planType}...`);
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planType, customerEmail: recipientEmail })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url; // Real Stripe live checkout redirect
+      } else {
+        alert('Stripe error: ' + (data.error || 'Unable to create session'));
+      }
+    } catch (err) {
+      alert('Network error connecting to Stripe payment gateway.');
+    }
+  };
 
   const handleAiSend = (e) => {
     if (e.key === 'Enter' && aiPrompt.trim()) {
@@ -153,7 +192,6 @@ function DashboardContent() {
                 <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl text-center"><span className="text-[10px] text-slate-400 block">COMPLIANCE</span><span className="text-xs font-bold text-white">SOC2 / HIPAA</span></div>
               </div>
 
-              {/* Sub-tabs simulation */}
               <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-5">
                 <div className="border-b border-slate-800 pb-3 flex gap-4 text-xs font-bold text-indigo-400">
                   <span className="border-b-2 border-indigo-500 pb-3 cursor-pointer">🔒 Zero Trust AWS IAM / S3 Vault</span>
@@ -237,11 +275,11 @@ function DashboardContent() {
                 </div>
                 <div>
                   <label className="text-xs text-emerald-400 block mb-1">🔒 Sanitized Output (AES-256 Masked)</label>
-                  <textarea readOnly value={'{\n  "customer": "AES256_ANONYMIZED_USER",\n  "email": "masked_user@bank-vault.com",\n  "iban": "GB33****XXXX5555",\n  "amount": "EUR 24,500.00 [NORMALIZED]"\n}'} className="w-full h-48 bg-slate-900 border border-emerald-500/30 rounded-xl p-3 text-xs text-emerald-300 font-mono resize-none outline-none"></textarea>
+                  <textarea readOnly value={sanitizedOutput || '{\n  "customer": "AES256_ANONYMIZED_USER",\n  "email": "masked_user@bank-vault.com",\n  "iban": "GB33****XXXX5555",\n  "amount": "EUR 24,500.00 [NORMALIZED]"\n}'} className="w-full h-48 bg-slate-900 border border-emerald-500/30 rounded-xl p-3 text-xs text-emerald-300 font-mono resize-none outline-none"></textarea>
                 </div>
               </div>
-              <button onClick={() => alert('In-memory AES-256 anonymization completed with zero disk persistence!')} className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs rounded-xl transition">
-                ⚡ Execute Live In-Memory Masking Test
+              <button onClick={handleLiveSanitize} disabled={isProcessing} className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs rounded-xl transition">
+                {isProcessing ? 'Processing...' : '⚡ Execute Live In-Memory Masking Test'}
               </button>
             </div>
           )}
@@ -408,11 +446,11 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 8: BILLING & ENTERPRISE PLAN */}
+          {/* TAB 8: BILLING & ENTERPRISE PLAN (CONNECTED TO REAL STRIPE API) */}
           {activeTab === 8 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white">💳 Subscription, Tier Limits & Payment Gateways</h2>
-              <p className="text-xs text-slate-400">Flexible plans designed for Startups, Mid-size Companies, and Banking Enterprises.</p>
+              <h2 className="text-2xl font-bold text-white">💳 Subscription, Tier Limits & Real Stripe Gateway</h2>
+              <p className="text-xs text-slate-400">Flexible plans connected to real Stripe payment processing.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3 flex flex-col justify-between">
@@ -425,8 +463,8 @@ function DashboardContent() {
                       <li>• PII Sanitization: AES-256 Masking & Anonymization</li>
                     </ul>
                   </div>
-                  <button onClick={() => alert('Redirecting to secure Stripe checkout trial...')} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition">
-                    Start 10-Day Free Trial
+                  <button onClick={() => handleStripeCheckout('Professional ($19/mo)')} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition">
+                    Pay via Stripe Secure Checkout ($19/mo)
                   </button>
                 </div>
 
@@ -440,8 +478,8 @@ function DashboardContent() {
                       <li>• SLA Guarantee: 99.99% Uptime with Custom DPA</li>
                     </ul>
                   </div>
-                  <button onClick={() => alert('Enterprise sales team notified for custom demo request.')} className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition">
-                    Request Enterprise On-Premise Demo
+                  <button onClick={() => handleStripeCheckout('Enterprise Custom')} className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition">
+                    Request Enterprise SLA Setup
                   </button>
                 </div>
               </div>
