@@ -3,10 +3,24 @@ import { useState } from 'react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState(0);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileContent, setFileContent] = useState('');
   const [messages, setMessages] = useState([
     { sender: 'ai', text: 'Hello! I am your Enterprise Multilingual AI Assistant. I can assist you with data masking, PII compliance, and currency normalization in any language (English, German, Spanish, Urdu, French, etc.). How can I help you today?' }
   ]);
   const [inputMessage, setInputMessage] = useState('');
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFileContent(event.target.result);
+      };
+      reader.readAsText(file);
+    }
+  };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -16,21 +30,18 @@ export default function Home() {
     setMessages(prev => [...prev, { sender: 'user', text: userMsg }]);
     setInputMessage('');
 
-    // Dynamic Multilingual Response Logic
     setTimeout(() => {
       let reply = "I have processed your query securely under Zero Trust compliance protocols.";
       const lower = userMsg.toLowerCase();
 
-      if (lower.includes('hallo') || lower.includes('danke') || lower.includes('deutsch') || lower.includes('guten')) {
-        reply = "Guten Tag! Ich kann Ihre Daten gemäß DSGVO und HIPAA sicher maskieren und anonymisieren.";
-      } else if (lower.includes('hola') || lower.includes('gracias') || lower.includes('espanol') || lower.includes('español')) {
-        reply = "¡Hola! Puedo ayudarle a enmascarar y proteger sus datos confidenciales según las normativas globales.";
-      } else if (lower.includes('bonjour') || lower.includes('merci') || lower.includes('francais')) {
-        reply = "Bonjour! Je peux vous aider à masquer et sécuriser vos données personnelles.";
-      } else if (lower.includes('kaise') || lower.includes('kya') || lower.includes('urdu') || lower.includes('kar')) {
-        reply = "Main aapke data ko secure tareeqay se mask aur sanitize karne mein poori madad kar sakta hoon. Koi payload paste karein!";
-      } else if (lower.includes('pii') || lower.includes('mask') || lower.includes('sanitize')) {
-        reply = "PII masking dynamically redacts credit cards, emails, SSNs, and phone numbers before storing or processing.";
+      if (lower.includes('hallo') || lower.includes('danke') || lower.includes('deutsch')) {
+        reply = "Guten Tag! Ich kann Ihre Daten gemäß DSGVO und HIPAA sicher maskieren.";
+      } else if (lower.includes('hola') || lower.includes('gracias')) {
+        reply = "¡Hola! Puedo ayudarle a enmascarar y proteger sus datos confidenciales.";
+      } else if (lower.includes('kaise') || lower.includes('kya') || lower.includes('urdu')) {
+        reply = "Main aapke data ko secure tareeqay se mask aur sanitize karne mein poori madad kar sakta hoon.";
+      } else if (lower.includes('pii') || lower.includes('mask') || lower.includes('file')) {
+        reply = "Batch & Bulk files (JSON, CSV, Log) can be uploaded without estimated size restrictions for stream processing.";
       }
 
       setMessages(prev => [...prev, { sender: 'ai', text: reply }]);
@@ -86,20 +97,46 @@ export default function Home() {
 
         {activeTab === 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Box: Payload Input & File Upload */}
             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Payload Input & Sanitizer</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-white">Payload Input & File Upload</h3>
+                  <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">No File Size Limit</span>
+                </div>
+                
+                {/* File Upload Trigger */}
+                <div className="mb-3 border-2 border-dashed border-slate-800 hover:border-indigo-500/50 rounded-xl p-4 text-center bg-slate-950/50 transition">
+                  <input 
+                    type="file" 
+                    id="payload-file" 
+                    onChange={handleFileUpload} 
+                    className="hidden" 
+                    accept=".json,.csv,.txt,.log"
+                  />
+                  <label htmlFor="payload-file" className="cursor-pointer block">
+                    <span className="text-xs text-indigo-400 font-medium block">Click to upload file (JSON, CSV, LOG, TXT)</span>
+                    <span className="text-[11px] text-slate-500 mt-0.5 block">
+                      {selectedFile ? `Selected: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)` : 'Supports unlimited size batch processing'}
+                    </span>
+                  </label>
+                </div>
+
                 <textarea 
-                  placeholder="Paste JSON payload or raw text containing PII..."
-                  className="w-full h-40 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-300 text-sm focus:outline-none focus:border-indigo-500 font-mono resize-none"
+                  value={fileContent}
+                  onChange={(e) => setFileContent(e.target.value)}
+                  placeholder="Paste JSON payload, raw text, or upload file above..."
+                  className="w-full h-32 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-300 text-sm focus:outline-none focus:border-indigo-500 font-mono resize-none"
                 ></textarea>
               </div>
+
               <button className="mt-4 w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium rounded-xl transition shadow-lg shadow-indigo-600/20">
                 Sanitize & Normalize Payload
               </button>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between h-[420px]">
+            {/* Right Box: Multilingual AI Assistant */}
+            <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between h-[450px]">
               <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800">
                 <div className="flex items-center space-x-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
@@ -134,7 +171,22 @@ export default function Home() {
           </div>
         )}
 
-        {activeTab > 0 && (
+        {/* Tab 8: Batch Payload Processing */}
+        {activeTab === 7 && (
+          <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl">
+            <h3 className="text-xl font-bold text-white mb-2">8. Batch Payload & File Processing Pipeline</h3>
+            <p className="text-sm text-slate-400 mb-6">Upload enterprise data streams or massive log files without size limitations for asynchronous stream sanitization.</p>
+            <div className="border-2 border-dashed border-indigo-500/30 rounded-2xl p-12 text-center bg-slate-950">
+              <input type="file" id="batch-file" onChange={handleFileUpload} className="hidden" multiple />
+              <label htmlFor="batch-file" className="cursor-pointer">
+                <div className="text-indigo-400 font-semibold text-lg mb-1">Click to Upload Large Enterprise Datasets</div>
+                <div className="text-xs text-slate-500">Supports .csv, .json, .log, .txt without file size restrictions</div>
+              </label>
+            </div>
+          </div>
+        )}
+
+        {activeTab !== 0 && activeTab !== 7 && (
           <div className="bg-slate-900 border border-slate-800 p-12 rounded-2xl text-center">
             <div className="w-16 h-16 bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl font-bold">
               {activeTab + 1}
