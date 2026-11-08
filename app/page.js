@@ -178,7 +178,7 @@ function DashboardContent() {
     }, 500);
   };
 
-  // Exact Streamlit Sidebar Feature Names & Icons
+  // Exact matching modules from your screenshot
   const modules = [
     { id: 0, title: "Data Workspace & Cloud Ingestion", icon: "📁" },
     { id: 1, title: "Compliance & Risk Scorecard", icon: "📊" },
@@ -194,14 +194,14 @@ function DashboardContent() {
 
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans">
-      {/* SIDEBAR */}
-      <aside className="w-72 bg-slate-900/90 border-r border-slate-800 p-5 flex flex-col justify-between h-screen sticky top-0 overflow-y-auto">
+      {/* ENTERPRISE CONTROL SIDEBAR */}
+      <aside className="w-80 bg-slate-900 border-r border-slate-800 p-5 flex flex-col justify-between h-screen sticky top-0 overflow-y-auto">
         <div className="space-y-6">
           <div>
             <h1 className="text-sm font-extrabold uppercase tracking-widest text-indigo-400 mb-4">Enterprise Control</h1>
             
             {/* Profile Card */}
-            <div className="bg-slate-950/80 border border-slate-800 p-4 rounded-2xl space-y-2">
+            <div className="bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-white">
                 <span>👤</span> Nabeeha Zaghum Ali
               </div>
@@ -231,7 +231,7 @@ function DashboardContent() {
 
           <hr className="border-slate-800" />
 
-          {/* Navigation Menu with Radio Buttons */}
+          {/* Navigation Menu */}
           <div className="space-y-2">
             <h2 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 mb-2">
               🧭 Navigation Menu
@@ -469,7 +469,7 @@ function DashboardContent() {
           </div>
         )}
 
-        {/* TAB 6: Audit Logs & Compliance PDF */}
+        {/* TAB 6: Audit Logs */}
         {activeTab === 6 && (
           <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6">
             <h3 className="text-xl font-bold text-white">Tamper-Proof Audit Compliance Logs (SOC2 / ISO 27001)</h3>
@@ -603,4 +603,3 @@ export default function Home() {
     </Suspense>
   );
 }
-Aap is updated code ko apni app/page.js file mein save karke push kar dein. Ab aapka Next.js dashboard bilkul wahi exact look aur names dikhayega jo aapke Streamlit prototype mein thay!
