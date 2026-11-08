@@ -13,13 +13,13 @@ function DashboardContent() {
   };
 
   const [selectedRole, setSelectedRole] = useState('Admin');
-  const [userName, setUserName] = useState('Nabeeha Zaghum Ali');
+  const [userName, setUserName] = useState('Enterprise User');
   const [isEditingName, setIsEditingName] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
-  const [aiResponse, setAiResponse] = useState('👋 Hello Nabeeha Zaghum Ali! Welcome to Global Data Sanitizer (Nexus Digital Enterprise Node). Global banking compliance, automated risk scorecards, and IBAN/Card masking modules are fully online. How can I assist you today?');
+  const [aiResponse, setAiResponse] = useState('👋 Welcome to Global Data Sanitizer (Nexus Enterprise Node). Global banking compliance, automated risk scorecards, and IBAN/Card masking modules are fully online. How can I assist you today?');
 
   // Masking & File state
-  const [fileContent, setFileContent] = useState('{\n  "customer": "Nabeeha Ali",\n  "email": "nabeeha.ali@bank-vault.com",\n  "iban": "GB33BUKB20201555555555",\n  "amount": "EUR 24,500.00"\n}');
+  const [fileContent, setFileContent] = useState('{\n  "customer": "Enterprise Client",\n  "email": "client@bank-vault.com",\n  "iban": "GB33BUKB20201555555555",\n  "amount": "EUR 24,500.00"\n}');
   const [sanitizedResult, setSanitizedResult] = useState('');
 
   const modules = [
@@ -62,12 +62,12 @@ function DashboardContent() {
                     className="bg-slate-900 border border-indigo-500 px-1 py-0.5 rounded text-xs text-white outline-none w-36"
                   />
                 ) : (
-                  <span onClick={() => setIsEditingName(true)} className="cursor-pointer hover:text-indigo-400">
+                  <span onClick={() => setIsEditingName(true)} className="cursor-pointer hover:text-indigo-400" title="Click to edit user name">
                     {userName} ✏️
                   </span>
                 )}
               </div>
-              <div className="text-[11px] text-slate-400">📖 Org: Nexus Digital Enterprise Node</div>
+              <div className="text-[11px] text-slate-400">📖 Org: Nexus Enterprise Node</div>
               <div className="text-[11px] text-indigo-400 font-mono">🔑 Role: {selectedRole}</div>
             </div>
           </div>
