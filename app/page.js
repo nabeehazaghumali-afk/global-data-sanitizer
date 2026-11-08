@@ -16,21 +16,21 @@ function DashboardContent() {
   const [userName, setUserName] = useState('Enterprise User');
   const [isEditingName, setIsEditingName] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
-  const [aiResponse, setAiResponse] = useState('👋 Welcome to Global Data Sanitizer (Nexus Enterprise Node). Global banking compliance, automated risk scorecards, and IBAN/Card masking modules are fully online. How can I assist you today?');
+  const [aiResponse, setAiResponse] = useState('👋 Welcome to Global Data Sanitizer. Global banking compliance, automated risk scorecards, and IBAN/Card masking modules are fully online. How can I assist you today?');
 
-  // Interactive states for modules
-  const [fileContent, setFileContent] = useState('{\n  "customer": "Enterprise Client",\n  "email": "client@bank-vault.com",\n  "iban": "GB33BUKB20201555555555",\n  "amount": "EUR 24,500.00"\n}');
+  // Interactive states
   const [awsArn, setAwsArn] = useState('arn:aws:iam::123456789012:role/EnterpriseSanitizerVaultRole');
   const [extId, setExtId] = useState('secure_token_xyz_9981');
   const [region, setRegion] = useState('us-east-1 (N. Virginia)');
+  const [rawInput, setRawInput] = useState('{\n  "customer": "John Doe",\n  "email": "john.doe@bank-vault.com",\n  "iban": "GB33BUKB20201555555555",\n  "amount": "EUR 24,500.00"\n}');
+  const [sovereignRegion, setSovereignRegion] = useState('🇪🇺 EU-Central-1 (Frankfurt - Strict GDPR Compliance)');
   const [ruleName, setRuleName] = useState('Proprietary Employee ID Filter');
   const [regexExpr, setRegexExpr] = useState('EMP-\\d{4}-[A-Z]{2}');
   const [maskVal, setMaskVal] = useState('[RESTRICTED_EMP_ID]');
   const [targetField, setTargetField] = useState('Employee_Code');
-  const [sovereignRegion, setSovereignRegion] = useState('🇪🇺 EU-Central-1 (Frankfurt - Strict GDPR Compliance)');
   const [reportTitle, setReportTitle] = useState('Q4 Banking Enterprise Data Sanitization & PII Audit Report');
   const [auditNotes, setAuditNotes] = useState('All ingested data processed entirely in volatile memory via AES-256 encryption. Zero retention on disk.');
-  const [recipientEmail, setRecipientEmail] = useState('global.data.sanitizer@gmail.com');
+  const [recipientEmail, setRecipientEmail] = useState('admin@enterprise.com');
   const [feedbackName, setFeedbackName] = useState('Enterprise User (Admin)');
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState('');
@@ -57,7 +57,7 @@ function DashboardContent() {
 
   return (
     <div className="flex min-h-screen bg-[#0b0f19] text-[#f8fafc] font-sans">
-      {/* SIDEBAR: Enterprise Control & Navigation */}
+      {/* SIDEBAR */}
       <aside className="w-80 bg-[#0f172a] border-r border-slate-800 p-5 flex flex-col justify-between h-screen sticky top-0 overflow-y-auto">
         <div className="space-y-6">
           <div>
@@ -75,7 +75,7 @@ function DashboardContent() {
                     className="bg-slate-900 border border-indigo-500 px-1 py-0.5 rounded text-xs text-white outline-none w-36"
                   />
                 ) : (
-                  <span onClick={() => setIsEditingName(true)} className="cursor-pointer hover:text-indigo-400" title="Click to edit name">
+                  <span onClick={() => setIsEditingName(true)} className="cursor-pointer hover:text-indigo-400">
                     {userName} ✏️
                   </span>
                 )}
@@ -124,20 +124,21 @@ function DashboardContent() {
 
         <div className="mt-4 pt-4 border-t border-slate-800 text-[11px] text-slate-400 space-y-2">
           <div className="font-bold text-slate-300">🔒 Global Growth & Security:</div>
-          <div className="text-[10px] text-slate-400">✅ Universal Trust | ✅ Zero Trust OIDC | ✅ AES-256</div>
+          <div className="text-[10px]">✅ Universal Trust | ✅ Zero Trust OIDC | ✅ AES-256</div>
           <div className="pt-2 border-t border-slate-800">
-            <div className="font-bold text-slate-300 mb-1">📦 On-Premise Setup</div>
-            <button onClick={() => alert('Docker configuration bundle downloaded successfully!')} className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-indigo-300 text-center rounded-lg transition font-medium">
-              📥 Download Docker / K8s Chart
+            <div className="font-bold text-slate-300 mb-1">📦 On-Premise & Desktop Setup</div>
+            <button onClick={() => alert('Docker configuration bundle downloaded successfully!')} className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-indigo-300 text-center rounded-lg transition font-medium text-xs">
+              📥 Download Dockerfile / K8s Chart
             </button>
           </div>
         </div>
       </aside>
 
-      {/* MAIN CONTENT & AI ASSISTANT LAYOUT */}
+      {/* MAIN CONTENT AREA */}
       <main className="flex-1 p-6 overflow-y-auto flex gap-6">
-        {/* CENTER MODULE CONTENT */}
         <div className="flex-1 space-y-6">
+          
+          {/* TAB 0: DATA WORKSPACE */}
           {activeTab === 0 && (
             <div className="space-y-6">
               <div>
@@ -152,13 +153,19 @@ function DashboardContent() {
                 <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl text-center"><span className="text-[10px] text-slate-400 block">COMPLIANCE</span><span className="text-xs font-bold text-white">SOC2 / HIPAA</span></div>
               </div>
 
-              <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                <h3 className="text-sm font-bold text-white">🔒 Zero Trust Amazon S3 / Cloud Bucket Ingestion via IAM Role</h3>
+              {/* Sub-tabs simulation */}
+              <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-5">
+                <div className="border-b border-slate-800 pb-3 flex gap-4 text-xs font-bold text-indigo-400">
+                  <span className="border-b-2 border-indigo-500 pb-3 cursor-pointer">🔒 Zero Trust AWS IAM / S3 Vault</span>
+                </div>
+
+                <h3 className="text-sm font-bold text-white">Zero Trust Amazon S3 / Cloud Bucket Ingestion via IAM Role</h3>
                 <p className="text-xs text-slate-400">Banks never share master static keys. Authenticate securely using AWS IAM Role Delegation and OIDC Web Identity Federation.</p>
+                
                 <div className="space-y-3">
                   <div>
                     <label className="text-[11px] text-slate-300 block mb-1">AWS IAM Role ARN (Secure Delegation)</label>
-                    <input type="text" value={awsArn} onChange={(e) => setAwsArn(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 outline-none" />
+                    <input type="text" value={awsArn} onChange={(e) => setAwsArn(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 outline-none font-mono" />
                   </div>
                   <div>
                     <label className="text-[11px] text-slate-300 block mb-1">External ID / Trust Token</label>
@@ -180,15 +187,16 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 1: COMPLIANCE & RISK SCORECARD */}
           {activeTab === 1 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">📊 Enterprise Compliance & Data Risk Scorecard</h2>
               <p className="text-xs text-slate-400">Automated audit verification providing instant risk scoring for multinational institutions.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl"><span className="text-xs text-slate-400 block">Overall Security Rating</span><span className="text-2xl font-bold text-emerald-400 mt-1 block">AAA+</span></div>
-                <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl"><span className="text-xs text-slate-400 block">PII Leakage Risk</span><span className="text-2xl font-bold text-emerald-400 mt-1 block">0.00%</span></div>
-                <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl"><span className="text-xs text-slate-400 block">GDPR / HIPAA Readiness</span><span className="text-2xl font-bold text-emerald-400 mt-1 block">100%</span></div>
+                <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl"><span className="text-xs text-slate-400 block">Overall Security Rating</span><span className="text-2xl font-bold text-emerald-400 mt-1 block">AAA+</span><span className="text-[10px] text-slate-500">Top 1% Global Standard</span></div>
+                <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl"><span className="text-xs text-slate-400 block">PII Leakage Risk</span><span className="text-2xl font-bold text-emerald-400 mt-1 block">0.00%</span><span className="text-[10px] text-slate-500">Fully Mitigated</span></div>
+                <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl"><span className="text-xs text-slate-400 block">GDPR / HIPAA Readiness</span><span className="text-2xl font-bold text-emerald-400 mt-1 block">100%</span><span className="text-[10px] text-slate-500">Fully Certified</span></div>
               </div>
 
               <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
@@ -216,6 +224,7 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 2: REAL-TIME VISUAL COMPARISON */}
           {activeTab === 2 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">🔍 Real-Time Visual PII Masking & Currency Comparison</h2>
@@ -224,7 +233,7 @@ function DashboardContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-slate-400 block mb-1">📥 Raw Input Data (Messy & Exposed PII)</label>
-                  <textarea value={fileContent} onChange={(e) => setFileContent(e.target.value)} className="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 font-mono resize-none outline-none"></textarea>
+                  <textarea value={rawInput} onChange={(e) => setRawInput(e.target.value)} className="w-full h-48 bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 font-mono resize-none outline-none"></textarea>
                 </div>
                 <div>
                   <label className="text-xs text-emerald-400 block mb-1">🔒 Sanitized Output (AES-256 Masked)</label>
@@ -237,6 +246,7 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 3: MULTI-REGION COMPLIANCE */}
           {activeTab === 3 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">🌐 Multi-Region Cloud Compliance & Data Residency Routing</h2>
@@ -261,6 +271,7 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 4: CUSTOM REGEX & PII RULES */}
           {activeTab === 4 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">⚡ Custom Developer Regex & PII Rule Builder</h2>
@@ -292,6 +303,7 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 5: TEAM ACCESS & RBAC */}
           {activeTab === 5 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">👥 Enterprise Team Access & RBAC Management</h2>
@@ -322,6 +334,7 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 6: AUDIT LOGS & COMPLIANCE PDF */}
           {activeTab === 6 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">📜 Tamper-Proof Audit Compliance Logs (SOC2 / ISO 27001)</h2>
@@ -364,6 +377,7 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 7: API, SANDBOX & SSO */}
           {activeTab === 7 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">🔑 Developer Sandbox APIs, Key Generator & Enterprise SSO</h2>
@@ -394,6 +408,7 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 8: BILLING & ENTERPRISE PLAN */}
           {activeTab === 8 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">💳 Subscription, Tier Limits & Payment Gateways</h2>
@@ -433,6 +448,7 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* TAB 9: USER FEEDBACK */}
           {activeTab === 9 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">⭐ User Feedback & Enterprise Reviews</h2>
@@ -457,9 +473,10 @@ function DashboardContent() {
               </div>
             </div>
           )}
+
         </div>
 
-        {/* RIGHT SIDEBAR: Enterprise AI Assistant */}
+        {/* RIGHT SIDEBAR: AI ASSISTANT */}
         <aside className="w-80 bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between h-[85vh] sticky top-6 shadow-xl">
           <div className="space-y-4">
             <h3 className="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider">
