@@ -470,6 +470,27 @@ function DashboardContent() {
           </div>
         </div>
       )}
+
+      {/* Legal & Trust Framework (Step 3) */}
+      <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl space-y-2 mt-8">
+        <div className="flex items-center gap-2">
+          <span className="text-emerald-400 text-xs font-bold uppercase tracking-wider">🛡️ Enterprise Security & Compliance Guarantee</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 text-xs text-slate-400">
+          <div>
+            <strong className="text-slate-200 block mb-0.5">Data Ownership:</strong> 
+            You retain 100% intellectual property and ownership of all uploaded payloads.
+          </div>
+          <div>
+            <strong className="text-slate-200 block mb-0.5">Zero Retention:</strong> 
+            Data is processed exclusively in volatile RAM memory and purged immediately after download.
+          </div>
+          <div>
+            <strong className="text-slate-200 block mb-0.5">Regulatory Frameworks:</strong> 
+            Fully aligned with GDPR (Article 32) and HIPAA Security Rule technical safeguards.
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
