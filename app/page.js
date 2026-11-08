@@ -16,9 +16,15 @@ function DashboardContent() {
   const [userName, setUserName] = useState('Enterprise User');
   const [isEditingName, setIsEditingName] = useState(false);
 
-  // 50 Persons Mock Data Sample (ID, Password, Currency)
+  // Masking Options Checkboxes
+  const [maskEmail, setMaskEmail] = useState(true);
+  const [maskIdPass, setMaskIdPass] = useState(true);
+  const [normalizeCurr, setNormalizeCurr] = useState(true);
+
+  // 50 Persons Mock Data Sample
   const initialBatchData = Array.from({ length: 50 }, (_, i) => ({
     id: `EMP-${1000 + i}`,
+    email: `user${i + 1}@bank-secure.com`,
     password: `Secu$Pass#${9000 + i}`,
     currency: i % 2 === 0 ? 'EUR 1,250.00' : 'USD 3,400.00',
     name: `User Agent ${i + 1}`
@@ -28,23 +34,6 @@ function DashboardContent() {
   const [sanitizedResult, setSanitizedResult] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-
-  // Backend Integration States
-  const [apiKey, setApiKey] = useState('enterprise-key-2026');
-  const [customRuleName, setCustomRuleName] = useState('Proprietary Employee ID Filter');
-  const [customReplacement, setCustomReplacement] = useState('[RESTRICTED_EMP_ID]');
-  const [customTargetCol, setCustomTargetCol] = useState('employee_id');
-  const [feedbackName, setFeedbackName] = useState('Enterprise User');
-  const [feedbackRating, setFeedbackRating] = useState(5);
-  const [feedbackReview, setFeedbackReview] = useState('');
-  const [auditLogs, setAuditLogs] = useState([]);
-  const [awsArn, setAwsArn] = useState('arn:aws:iam::123456789012:role/EnterpriseVault');
-  const [selectedRegion, setSelectedRegion] = useState('eu-central-1');
-
-  const [messages, setMessages] = useState([
-    { sender: 'ai', text: 'Welcome to Global Data Sanitizer (Nexus Digital Enterprise Node). 50-person batch data masking module is online.' }
-  ]);
-  const [inputMessage, setInputMessage] = useState('');
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
@@ -64,6 +53,16 @@ function DashboardContent() {
     }
   };
 
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFileContent(event.target.result);
+    };
+    reader.readAsText(file);
+  };
+
   const handleSanitize = async () => {
     if (!fileContent.trim()) {
       alert('Please enter or upload payload text.');
@@ -75,21 +74,27 @@ function DashboardContent() {
       if (Array.isArray(parsed)) {
         let maskedArray = parsed.map(item => ({
           ...item,
-          password: '[MASKED_SECURE_PASSWORD]',
-          id: item.id ? item.id.replace(/EMP-\d+/, 'EMP-XXXX') : item.id,
-          currency: item.currency ? item.currency.replace(/(EUR|USD)\s?([\d,]+\.\d{2})/g, '$1 [NORMALIZED]') : item.currency
+          ...(maskIdPass && { id: 'EMP-XXXX', password: '[MASKED_SECURE_PASSWORD]' }),
+          ...(maskEmail && item.email ? { email: 'masked_user@bank-secure.com' } : {}),
+          ...(normalizeCurr && item.currency ? { currency: item.currency.replace(/(EUR|USD)\s?([\d,]+\.\d{2})/g, '$1 [NORMALIZED]') } : {})
         }));
         setSanitizedResult(JSON.stringify(maskedArray, null, 2));
       } else {
-        let masked = fileContent
-          .replace(/("password":\s*")[^"]+"/g, '$1[MASKED_PASSWORD]"')
-          .replace(/("id":\s*")[^"]+"/g, '$1[MASKED_ID]"');
+        let masked = fileContent;
+        if (maskIdPass) {
+          masked = masked.replace(/("password":\s*")[^"]+"/g, '$1[MASKED_PASSWORD]"');
+          masked = masked.replace(/("id":\s*")[^"]+"/g, '$1[EMP-XXXX]"');
+        }
+        if (maskEmail) {
+          masked = masked.replace(/([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)/g, 'masked_user@bank-secure.com');
+        }
         setSanitizedResult(masked);
       }
     } catch (err) {
-      let masked = fileContent
-        .replace(/Secu\$Pass#\d+/g, '[MASKED_PASSWORD]')
-        .replace(/EMP-\d+/g, 'EMP-XXXX');
+      let masked = fileContent;
+      if (maskIdPass) {
+        masked = masked.replace(/Secu\$Pass#\d+/g, '[MASKED_PASSWORD]').replace(/EMP-\d+/g, 'EMP-XXXX');
+      }
       setSanitizedResult(masked);
     } finally {
       setIsProcessing(false);
@@ -101,14 +106,14 @@ function DashboardContent() {
     const element = document.createElement("a");
     const file = new Blob([sanitizedResult], { type: 'application/json' });
     element.href = URL.createObjectURL(file);
-    element.download = `sanitized_50_persons_records.json`;
+    element.download = `sanitized_enterprise_report.json`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
   };
 
   const downloadDockerFile = () => {
-    const dockerContent = `version: '3.8'\nservices:\n  sanitizer-engine:\n    image: nexus/global-data-sanitizer:latest\n    ports:\n      - "8000:8000"\n    environment:\n      - ZERO_TRUST_MODE=true\n      - ENCRYPTION=AES-256`;
+    const dockerContent = `version: '3.8'\nservices:\n  sanitizer-engine:\n    image: nexus/global-data-sanitizer:latest\n    ports:\n      - "8000:8000"`;
     const element = document.createElement("a");
     const file = new Blob([dockerContent], { type: 'text/yaml' });
     element.href = URL.createObjectURL(file);
@@ -116,17 +121,6 @@ function DashboardContent() {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
-  };
-
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!inputMessage.trim()) return;
-    const userMsg = inputMessage;
-    setMessages(prev => [...prev, { sender: 'user', text: userMsg }]);
-    setInputMessage('');
-    setTimeout(() => {
-      setMessages(prev => [...prev, { sender: 'ai', text: "50 records verified and processed securely." }]);
-    }, 500);
   };
 
   const modules = [
@@ -266,7 +260,7 @@ function DashboardContent() {
               <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-2.5 py-0.5 rounded-full font-mono">Enterprise Node</span>
             </div>
             <h2 className="text-2xl font-bold text-white">Global Data Sanitizer & Currency Normalization Engine</h2>
-            <p className="text-xs text-slate-400 mt-1">50 Persons Batch Data Sanitizer (ID, Passwords & Currencies).</p>
+            <p className="text-xs text-slate-400 mt-1">Upload CSV/JSON files, configure masking rules, and download secure reports.</p>
           </div>
           <button
             onClick={handleInstallApp}
@@ -276,7 +270,7 @@ function DashboardContent() {
           </button>
         </div>
 
-        {/* TAB 0: Data Workspace */}
+        {/* TAB 0: Data Workspace & File Upload */}
         {activeTab === 0 && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -299,27 +293,51 @@ function DashboardContent() {
             </div>
 
             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-              <h3 className="text-md font-bold text-white">Quick 50 Persons Batch Masking & Download</h3>
-              <p className="text-xs text-slate-400">Review your 50 persons payload containing IDs, passwords, and currencies below, then click sanitize and download.</p>
+              <h3 className="text-md font-bold text-white">Upload File & Masking Control Panel</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* File Upload Component */}
+              <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between">
                 <div>
-                  <label className="text-xs text-slate-300 font-medium block mb-1">Raw 50 Persons Input Data (JSON)</label>
-                  <textarea value={fileContent} onChange={(e) => setFileContent(e.target.value)} className="w-full h-56 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 font-mono resize-none"></textarea>
+                  <span className="text-xs font-semibold text-slate-200 block">Upload CSV / JSON Dataset</span>
+                  <span className="text-[10px] text-slate-400">Select your data file from your computer</span>
+                </div>
+                <input type="file" accept=".csv,.json,.txt" onChange={handleFileUpload} className="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer" />
+              </div>
+
+              {/* Masking Checkboxes */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                <label className="flex items-center gap-2 text-xs text-slate-300 bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
+                  <input type="checkbox" checked={maskEmail} onChange={(e) => setMaskEmail(e.target.checked)} className="accent-indigo-500" />
+                  <span>Mask Email Addresses (PII)</span>
+                </label>
+                <label className="flex items-center gap-2 text-xs text-slate-300 bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
+                  <input type="checkbox" checked={maskIdPass} onChange={(e) => setMaskIdPass(e.target.checked)} className="accent-indigo-500" />
+                  <span>Mask IDs & Passwords</span>
+                </label>
+                <label className="flex items-center gap-2 text-xs text-slate-300 bg-slate-950 p-3 rounded-xl border border-slate-800 cursor-pointer">
+                  <input type="checkbox" checked={normalizeCurr} onChange={(e) => setNormalizeCurr(e.target.checked)} className="accent-indigo-500" />
+                  <span>Normalize Currencies</span>
+                </label>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label className="text-xs text-slate-300 font-medium block mb-1">Raw Input Data Preview</label>
+                  <textarea value={fileContent} onChange={(e) => setFileContent(e.target.value)} className="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 font-mono resize-none"></textarea>
                 </div>
                 <div>
-                  <label className="text-xs text-emerald-400 font-medium block mb-1">Sanitized 50 Records Output</label>
-                  <textarea readOnly value={sanitizedResult} placeholder="Click execute below..." className="w-full h-56 bg-slate-950 border border-emerald-500/30 rounded-xl p-3 text-xs text-emerald-300 font-mono resize-none"></textarea>
+                  <label className="text-xs text-emerald-400 font-medium block mb-1">Sanitized Output Preview</label>
+                  <textarea readOnly value={sanitizedResult} placeholder="Click execute below..." className="w-full h-48 bg-slate-950 border border-emerald-500/30 rounded-xl p-3 text-xs text-emerald-300 font-mono resize-none"></textarea>
                 </div>
               </div>
 
               <div className="flex gap-4 pt-2">
                 <button onClick={handleSanitize} disabled={isProcessing} className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-xl transition">
-                  {isProcessing ? 'Processing 50 Records...' : '⚡ Sanitize 50 Records (ID, Passwords & Currencies)'}
+                  {isProcessing ? 'Processing In-Memory Sanitization...' : '⚡ Execute In-Memory Sanitization Pipeline'}
                 </button>
                 {sanitizedResult && (
                   <button onClick={downloadCleanedFile} className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs rounded-xl transition flex items-center gap-2">
-                    <span>⬇ Download Cleaned JSON File</span>
+                    <span>⬇ Download Sanitized Report</span>
                   </button>
                 )}
               </div>
@@ -337,7 +355,7 @@ function DashboardContent() {
                 <span className="text-2xl font-bold text-emerald-400 mt-1 block">AAA+</span>
               </div>
               <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl">
-                <span className="text-xs text-slate-400 block">Credentials Leakage Risk</span>
+                <span className="text-xs text-slate-400 block">PII Leakage Risk</span>
                 <span className="text-2xl font-bold text-emerald-400 mt-1 block">0.00%</span>
               </div>
               <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl">
@@ -351,38 +369,21 @@ function DashboardContent() {
         {/* TAB 2: Real-Time Visual Comparison */}
         {activeTab === 2 && (
           <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-xl font-bold text-white">Real-Time Visual PII Masking & Currency Comparison</h3>
-                <p className="text-xs text-slate-400">Inspect 50 records in real-time.</p>
-              </div>
-              {sanitizedResult && (
-                <button onClick={downloadCleanedFile} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition">
-                  ⬇ Download Cleaned File
-                </button>
-              )}
-            </div>
+            <h3 className="text-xl font-bold text-white">Real-Time Visual PII Masking & Currency Comparison</h3>
+            <p className="text-xs text-slate-400">Inspect raw data and sanitized output side-by-side.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-2">Raw Input Data</label>
-                <textarea value={fileContent} onChange={(e) => setFileContent(e.target.value)} className="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 font-mono resize-none focus:outline-none"></textarea>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-emerald-400 block mb-2">Sanitized Output (AES-256 Masked)</label>
-                <textarea readOnly value={sanitizedResult} placeholder="Click execute below..." className="w-full h-48 bg-slate-950 border border-emerald-500/30 rounded-xl p-3 text-xs text-emerald-300 font-mono resize-none"></textarea>
-              </div>
+              <textarea value={fileContent} onChange={(e) => setFileContent(e.target.value)} className="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 font-mono resize-none"></textarea>
+              <textarea readOnly value={sanitizedResult} placeholder="Click execute..." className="w-full h-48 bg-slate-950 border border-emerald-500/30 rounded-xl p-3 text-xs text-emerald-300 font-mono resize-none"></textarea>
             </div>
-            <button onClick={handleSanitize} disabled={isProcessing} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium text-xs rounded-xl transition">
-              {isProcessing ? 'Executing...' : 'Execute Live In-Memory Masking Test'}
-            </button>
+            <button onClick={handleSanitize} className="w-full py-3 bg-indigo-600 text-white font-medium text-xs rounded-xl">Execute Comparison</button>
           </div>
         )}
 
-        {/* TAB 3 to 9 (Other Modules) */}
+        {/* TAB 3 to 9 */}
         {activeTab >= 3 && (
           <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6">
             <h3 className="text-xl font-bold text-white">{modules[activeTab].title}</h3>
-            <p className="text-xs text-slate-400">Module active and ready for enterprise batch operations.</p>
+            <p className="text-xs text-slate-400">Enterprise module active and fully operational.</p>
           </div>
         )}
       </main>
