@@ -67,10 +67,9 @@ function DashboardContent() {
     setIsProcessing(false);
   };
 
-  // REAL STRIPE CHECKOUT INTEGRATION
+  // REAL STRIPE CHECKOUT INTEGRATION (NO SIMULATION)
   const handleStripeCheckout = async (planType) => {
     try {
-      alert(`Connecting to Stripe Secure Gateway for ${planType}...`);
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
