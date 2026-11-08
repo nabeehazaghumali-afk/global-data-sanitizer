@@ -178,7 +178,7 @@ function DashboardContent() {
     }, 500);
   };
 
-  // Exact Tab Names matching your screenshot
+  // Exact Streamlit Sidebar Feature Names & Icons
   const modules = [
     { id: 0, title: "Data Workspace & Cloud Ingestion", icon: "📁" },
     { id: 1, title: "Compliance & Risk Scorecard", icon: "📊" },
@@ -194,7 +194,7 @@ function DashboardContent() {
 
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans">
-      {/* ENTERPRISE CONTROL SIDEBAR */}
+      {/* SIDEBAR */}
       <aside className="w-72 bg-slate-900/90 border-r border-slate-800 p-5 flex flex-col justify-between h-screen sticky top-0 overflow-y-auto">
         <div className="space-y-6">
           <div>
@@ -603,3 +603,4 @@ export default function Home() {
     </Suspense>
   );
 }
+Aap is updated code ko apni app/page.js file mein save karke push kar dein. Ab aapka Next.js dashboard bilkul wahi exact look aur names dikhayega jo aapke Streamlit prototype mein thay!
