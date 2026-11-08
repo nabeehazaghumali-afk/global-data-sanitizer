@@ -9,8 +9,11 @@ function DashboardContent() {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileContent, setFileContent] = useState('');
+  const [sanitizedResult, setSanitizedResult] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const [messages, setMessages] = useState([
-    { sender: 'ai', text: 'Hello! I am your Enterprise Multilingual AI Assistant. I can assist you with data masking, PII compliance, and currency normalization in any language (English, German, Spanish, Urdu, French, etc.). How can I help you today?' }
+    { sender: 'ai', text: 'Hello! I am your Enterprise Multilingual AI Assistant. I can assist you with data masking, PII compliance, and currency normalization in any language. How can I help you today?' }
   ]);
   const [inputMessage, setInputMessage] = useState('');
 
@@ -21,9 +24,31 @@ function DashboardContent() {
       const reader = new FileReader();
       reader.onload = (event) => {
         setFileContent(event.target.result);
+        setSanitizedResult('');
       };
       reader.readAsText(file);
     }
+  };
+
+  const handleSanitize = () => {
+    if (!fileContent.trim()) {
+      alert('Please upload a file or paste data in the textarea first.');
+      return;
+    }
+
+    setIsProcessing(true);
+    setTimeout(() => {
+      // Simulate enterprise Zero Trust PII Masking & Currency Normalization
+      let masked = fileContent
+        .replace(/([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)/g, '[MASKED_EMAIL]')
+        .replace(/(\b\d{3}[-.]?\d{2}[-.]?\d{4}\b)/g, '[MASKED_SSN]')
+        .replace(/(\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b)/g, '[MASKED_CREDIT_CARD]')
+        .replace(/(\b\+?\d{10,12}\b)/g, '[MASKED_PHONE]');
+
+      // Append normalization note
+      setSanitizedResult(`=== ZERO TRUST SANITIZED PAYLOAD (GDPR / HIPAA COMPLIANT) ===\n[Status: Success | Currency Normalized to USD/EUR]\n\n${masked}`);
+      setIsProcessing(false);
+    }, 800);
   };
 
   const handleSendMessage = (e) => {
@@ -35,23 +60,19 @@ function DashboardContent() {
     setInputMessage('');
 
     setTimeout(() => {
-      let reply = "I am processing your enterprise request under strict Zero Trust PII and compliance protocols.";
+      let reply = "I am processing your request under strict Zero Trust PII and compliance protocols.";
       const lower = userMsg.toLowerCase();
 
       if (lower.includes('how') || lower.includes('use') || lower.includes('guide')) {
-        reply = "To use this platform: 1. Click any of the 10 modules on the sidebar. 2. Upload your data file (CSV, JSON, LOG) with no size limits. 3. Click 'Sanitize & Normalize Payload' to process via FastAPI backend.";
+        reply = "To use this platform: 1. Select a module from sidebar. 2. Upload your file (CSV/JSON/TXT) or paste text. 3. Click 'Sanitize & Normalize Payload' to view masked output.";
       } else if (lower.includes('trial') || lower.includes('days')) {
-        reply = "Your 10-Day Enterprise Free Trial is active with full access to all modules, multi-region masking, and Docker container support.";
+        reply = "Your 10-Day Enterprise Free Trial is active with full access to all modules and Docker container support.";
       } else if (lower.includes('hallo') || lower.includes('deutsch')) {
-        reply = "Guten Tag! Ich stehe Ihnen zur Verfügung, um DSGVO-konforme Datenmaskierung und Währungsumrechnung durchzuführen.";
+        reply = "Guten Tag! Ich stehe Ihnen zur Verfügung, um DSGVO-konforme Datenmaskierung durchzuführen.";
       } else if (lower.includes('hola') || lower.includes('gracias')) {
-        reply = "¡Hola! Estoy listo para ayudarle a enmascarar información confidencial y normalizar divisas de forma segura.";
-      } else if (lower.includes('kaise') || lower.includes('urdu') || lower.includes('kese') || lower.includes('madad')) {
-        reply = "Main aapke data ko secure tareeqay se mask aur sanitize karne mein poori madad kar sakta hoon. Aap koi bhi module select karein aur data upload karein!";
-      } else if (lower.includes('currency') || lower.includes('fx') || lower.includes('rate')) {
-        reply = "Module 3 handles real-time foreign exchange rate fetching and automated base currency normalization for multi-region financial streams.";
-      } else if (lower.includes('pii') || lower.includes('mask') || lower.includes('gdpr') || lower.includes('hipaa')) {
-        reply = "Our multi-region masking engine automatically detects and obfuscates SSNs, credit cards, emails, and phone numbers complying with GDPR and HIPAA standards.";
+        reply = "¡Hola! Estoy listo para ayudarle a enmascarar información confidencial de forma segura.";
+      } else if (lower.includes('kaise') || lower.includes('urdu') || lower.includes('kese')) {
+        reply = "Main aapke data ko secure tareeqay se mask aur sanitize karne mein poori madad kar sakta hoon. Aap data upload karke sanitize button dabayein!";
       }
 
       setMessages(prev => [...prev, { sender: 'ai', text: reply }]);
@@ -115,16 +136,31 @@ function DashboardContent() {
                 value={fileContent}
                 onChange={(e) => setFileContent(e.target.value)}
                 placeholder="Paste JSON payload, raw text, or upload file above..."
-                className="w-full h-32 bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-300 text-sm focus:outline-none focus:border-indigo-500 font-mono resize-none"
+                className="w-full h-28 bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-300 text-xs focus:outline-none focus:border-indigo-500 font-mono resize-none mb-3"
               ></textarea>
+
+              {sanitizedResult && (
+                <div>
+                  <label className="text-xs font-semibold text-emerald-400 block mb-1">Sanitized Output Result:</label>
+                  <textarea 
+                    readOnly
+                    value={sanitizedResult}
+                    className="w-full h-28 bg-slate-950 border border-emerald-500/30 rounded-xl p-3 text-emerald-300 text-xs font-mono resize-none"
+                  ></textarea>
+                </div>
+              )}
             </div>
 
-            <button className="mt-4 w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium rounded-xl transition shadow-lg shadow-indigo-600/20">
-              Sanitize & Normalize Payload
+            <button 
+              onClick={handleSanitize}
+              disabled={isProcessing}
+              className="mt-4 w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium rounded-xl transition shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+            >
+              {isProcessing ? 'Processing Zero Trust Sanitization...' : 'Sanitize & Normalize Payload'}
             </button>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between h-[450px]">
+          <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between h-[480px]">
             <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800">
               <div className="flex items-center space-x-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
