@@ -1,0 +1,9 @@
+{
+  "name": "Global Data Sanitizer",
+  "short_name": "DataSanitizer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#4f46e5",
+  "description": "Zero-Storage Enterprise Data Sanitizer & PII Engine"
+}
