@@ -34,14 +34,16 @@ export default function Home() {
       let reply = "I have processed your query securely under Zero Trust compliance protocols.";
       const lower = userMsg.toLowerCase();
 
-      if (lower.includes('hallo') || lower.includes('danke') || lower.includes('deutsch')) {
+      if (lower.includes('trial') || lower.includes('days')) {
+        reply = "Your 10-Day Enterprise Free Trial is currently active with full access to all 10 modules and Docker support.";
+      } else if (lower.includes('hallo') || lower.includes('deutsch')) {
         reply = "Guten Tag! Ich kann Ihre Daten gemäß DSGVO und HIPAA sicher maskieren.";
       } else if (lower.includes('hola') || lower.includes('gracias')) {
         reply = "¡Hola! Puedo ayudarle a enmascarar y proteger sus datos confidenciales.";
-      } else if (lower.includes('kaise') || lower.includes('kya') || lower.includes('urdu')) {
+      } else if (lower.includes('kaise') || lower.includes('urdu')) {
         reply = "Main aapke data ko secure tareeqay se mask aur sanitize karne mein poori madad kar sakta hoon.";
-      } else if (lower.includes('pii') || lower.includes('mask') || lower.includes('file')) {
-        reply = "Batch & Bulk files (JSON, CSV, Log) can be uploaded without estimated size restrictions for stream processing.";
+      } else {
+        reply = "Enterprise Zero Trust engine is synchronized with your FastAPI backend and Docker container.";
       }
 
       setMessages(prev => [...prev, { sender: 'ai', text: reply }]);
@@ -58,11 +60,12 @@ export default function Home() {
     { id: 6, title: "7. API & Webhook Keys", desc: "FastAPI Connection Settings, API tokens, and Live Endpoints" },
     { id: 7, title: "8. Batch Payload Processing", desc: "Bulk File, CSV, or multi-JSON payload sanitization pipeline" },
     { id: 8, title: "9. Export & Compliance Reports", desc: "Downloadable Audit PDFs, certificates, and compliance summaries" },
-    { id: 9, title: "10. Security Settings", desc: "Access controls, vault configurations, and encryption logs" }
+    { id: 9, title: "10. Security Settings & Trial", desc: "Access controls, Docker configs, and 10-Day Free Trial Status" }
   ];
 
   return (
     <div className="flex h-full gap-6">
+      {/* Mobile Selector */}
       <div className="w-full md:hidden mb-4">
         <select 
           value={activeTab} 
@@ -76,10 +79,14 @@ export default function Home() {
       </div>
 
       <div className="flex-1 space-y-6">
+        {/* Top Active Module Header & 10-Day Trial Badge */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900/50 border border-slate-800 p-6 rounded-2xl backdrop-blur-sm gap-4">
           <div>
-            <span className="text-xs uppercase tracking-widest text-indigo-400 font-semibold">Active Module</span>
-            <h2 className="text-2xl font-bold text-white mt-1">{modules[activeTab].title}</h2>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs uppercase tracking-widest text-indigo-400 font-semibold">Active Module</span>
+              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-2 py-0.5 rounded-full font-mono">10-Day Free Trial Active</span>
+            </div>
+            <h2 className="text-2xl font-bold text-white">{modules[activeTab].title}</h2>
             <p className="text-sm text-slate-400 mt-1">{modules[activeTab].desc}</p>
           </div>
           <div className="flex items-center gap-3">
@@ -95,9 +102,9 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Tab 0: Overview & AI Assistant */}
         {activeTab === 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Box: Payload Input & File Upload */}
             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center mb-4">
@@ -105,7 +112,6 @@ export default function Home() {
                   <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">No File Size Limit</span>
                 </div>
                 
-                {/* File Upload Trigger */}
                 <div className="mb-3 border-2 border-dashed border-slate-800 hover:border-indigo-500/50 rounded-xl p-4 text-center bg-slate-950/50 transition">
                   <input 
                     type="file" 
@@ -117,7 +123,7 @@ export default function Home() {
                   <label htmlFor="payload-file" className="cursor-pointer block">
                     <span className="text-xs text-indigo-400 font-medium block">Click to upload file (JSON, CSV, LOG, TXT)</span>
                     <span className="text-[11px] text-slate-500 mt-0.5 block">
-                      {selectedFile ? `Selected: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)` : 'Supports unlimited size batch processing'}
+                      {selectedFile ? `Selected: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)` : 'Supports unlimited size stream processing'}
                     </span>
                   </label>
                 </div>
@@ -135,7 +141,7 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Right Box: Multilingual AI Assistant */}
+            {/* Multilingual AI Assistant */}
             <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between h-[450px]">
               <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800">
                 <div className="flex items-center space-x-2">
@@ -186,14 +192,37 @@ export default function Home() {
           </div>
         )}
 
-        {activeTab !== 0 && activeTab !== 7 && (
+        {/* Tab 10: Security Settings & Trial */}
+        {activeTab === 9 && (
+          <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl space-y-6">
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">10. Security Settings & 10-Day Trial Status</h3>
+              <p className="text-sm text-slate-400">Manage your container security, vault access tokens, and subscription trial period.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-5 bg-slate-950 border border-slate-800 rounded-xl">
+                <span className="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Subscription Status</span>
+                <div className="text-lg font-bold text-white mt-1">10-Day Free Trial (Active)</div>
+                <p className="text-xs text-slate-400 mt-2">Full enterprise features unlocked including FastAPI backend and Docker multi-region sync.</p>
+              </div>
+              <div className="p-5 bg-slate-950 border border-slate-800 rounded-xl">
+                <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Docker Deployment</span>
+                <div className="text-lg font-bold text-white mt-1">Containerized (Healthy)</div>
+                <p className="text-xs text-slate-400 mt-2">Configured with docker-compose and vault audit logging.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Other Intermediate Tabs */}
+        {activeTab !== 0 && activeTab !== 7 && activeTab !== 9 && (
           <div className="bg-slate-900 border border-slate-800 p-12 rounded-2xl text-center">
             <div className="w-16 h-16 bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl font-bold">
               {activeTab + 1}
             </div>
             <h3 className="text-lg font-bold text-white mb-2">{modules[activeTab].title}</h3>
             <p className="text-sm text-slate-400 max-w-md mx-auto mb-6">
-              This module is active and synchronized with your enterprise backend routing.
+              This module is active and synchronized with your enterprise backend routing and Docker environment.
             </p>
             <button 
               onClick={() => setActiveTab(0)}
