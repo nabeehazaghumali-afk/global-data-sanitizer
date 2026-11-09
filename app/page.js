@@ -67,7 +67,7 @@ function DashboardContent() {
     setIsProcessing(false);
   };
 
-  // REAL STRIPE CHECKOUT INTEGRATION (NO SIMULATION)
+  // REAL STRIPE CHECKOUT INTEGRATION
   const handleStripeCheckout = async (planType) => {
     try {
       const res = await fetch('/api/checkout', {
@@ -448,38 +448,93 @@ function DashboardContent() {
           {/* TAB 8: BILLING & ENTERPRISE PLAN (CONNECTED TO REAL STRIPE API) */}
           {activeTab === 8 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white">💳 Subscription, Tier Limits & Real Stripe Gateway</h2>
-              <p className="text-xs text-slate-400">Flexible plans connected to real Stripe payment processing.</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <h3 className="text-base font-bold text-white">Professional Tier</h3>
-                    <div className="text-xl font-extrabold text-indigo-400">$19 USD <span className="text-xs text-slate-400 font-normal">/ month</span></div>
-                    <ul className="text-xs text-slate-300 space-y-1.5 pt-2">
-                      <li>• Usage Limit: Up to 1,000,000 Rows / Month</li>
-                      <li>• Cloud Integration: AWS S3 / IAM Role Secure Stream</li>
-                      <li>• PII Sanitization: AES-256 Masking & Anonymization</li>
-                    </ul>
+              <div>
+                <h2 className="text-2xl font-bold text-white">💳 Subscription, Tier Limits & Payment Gateways</h2>
+                <p className="text-xs text-slate-400 mt-1">Flexible plans designed for Startups, Mid-size Companies, and Banking Enterprises.</p>
+              </div>
+
+              {/* Special Product Hunt Promo Banner */}
+              <div className="bg-emerald-950/60 border border-emerald-500/40 p-3 rounded-xl text-xs text-emerald-300 flex items-center gap-2">
+                <span>🎉</span>
+                <span><strong>Special Product Hunt Promotion:</strong> Activate your 10-Day Free Trial ($0 for 10 Days)! Get instant access to automated data sanitization and currency normalization.</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Professional Tier */}
+                <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-white font-bold text-lg">
+                      <span>⚡</span> Professional Tier
+                    </div>
+                    <p className="text-xs text-slate-400">Designed for Small SaaS Startups & Developers.</p>
+                    <div>
+                      <div className="text-2xl font-extrabold text-white">$19 USD <span className="text-xs text-slate-400 font-normal">/ month</span></div>
+                      <span className="text-[10px] text-emerald-400 font-semibold">↑ 10-Day Free Trial Active ($0 Now)</span>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800">
+                      <div className="text-xs font-semibold text-slate-300 mb-2">Flexible Plan Limits & Features:</div>
+                      <ul className="text-xs text-slate-400 space-y-1.5 font-mono">
+                        <li>🔹 Usage Limit: Up to 1,000,000 Rows / Month</li>
+                        <li>🔹 Cloud Integration: AWS S3 / IAM Role Secure Stream</li>
+                        <li>🔹 PII Sanitization: AES-256 Masking & Anonymization</li>
+                        <li>🔹 Currency Suite: All Major World Currencies Supported</li>
+                        <li>🔹 Support: Email & In-App Multilingual AI Assistant</li>
+                      </ul>
+                    </div>
                   </div>
-                  <button onClick={() => handleStripeCheckout('Professional ($19/mo)')} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition">
-                    Pay via Stripe Secure Checkout ($19/mo)
-                  </button>
+
+                  <div className="space-y-3 pt-3">
+                    <div>
+                      <label className="text-[11px] text-slate-300 block mb-1">Enter Work Email for Trial Activation</label>
+                      <input 
+                        type="email" 
+                        value={recipientEmail} 
+                        onChange={(e) => setRecipientEmail(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white outline-none focus:border-indigo-500"
+                        placeholder="global.data.sanitizer@gmail.com"
+                      />
+                    </div>
+                    <button 
+                      onClick={() => handleStripeCheckout('Professional 10-Day Free Trial')} 
+                      className="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-semibold text-xs rounded-xl transition shadow-lg"
+                    >
+                      🚀 Start 10-Day Free Trial ($19/mo afterwards)
+                    </button>
+                  </div>
                 </div>
 
-                <div className="bg-slate-900 border border-indigo-500/40 p-6 rounded-2xl space-y-3 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <h3 className="text-base font-bold text-white">Enterprise & Bank On-Premise</h3>
-                    <div className="text-xl font-extrabold text-emerald-400">Custom / SLA <span className="text-xs text-slate-400 font-normal">Based</span></div>
-                    <ul className="text-xs text-slate-300 space-y-1.5 pt-2">
-                      <li>• Unlimited Processing: Unlimited Rows & Streams</li>
-                      <li>• On-Premise Deployment: Dedicated Docker & K8s Charts</li>
-                      <li>• SLA Guarantee: 99.99% Uptime with Custom DPA</li>
-                    </ul>
+                {/* Enterprise & Bank On-Premise */}
+                <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-white font-bold text-lg">
+                      <span>🏢</span> Enterprise & Bank On-Premise
+                    </div>
+                    <p className="text-xs text-slate-400">For Banks, Fintech Agencies, and Multinationals.</p>
+                    <div>
+                      <div className="text-2xl font-extrabold text-white">Custom / SLA <span className="text-xs text-slate-400 font-normal">Based</span></div>
+                      <span className="text-[10px] text-emerald-400 font-semibold">↑ Zero Persistence Certified</span>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800">
+                      <div className="text-xs font-semibold text-slate-300 mb-2">Enterprise Key Features:</div>
+                      <ul className="text-xs text-slate-400 space-y-1.5 font-mono">
+                        <li>🔹 Unlimited Processing: Unlimited Rows & Parallel Streams</li>
+                        <li>🔹 On-Premise Deployment: Dedicated Docker & Kubernetes Helm Charts</li>
+                        <li>🔹 SLA Guarantee: 99.99% Uptime Guarantee with Custom DPA</li>
+                        <li>🔹 Dedicated Support: 24/7 Security Operations Team</li>
+                      </ul>
+                    </div>
                   </div>
-                  <button onClick={() => handleStripeCheckout('Enterprise Custom')} className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition">
-                    Request Enterprise SLA Setup
-                  </button>
+
+                  <div className="pt-6">
+                    <button 
+                      onClick={() => handleStripeCheckout('Enterprise Custom SLA')} 
+                      className="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2"
+                    >
+                      📞 Request Enterprise On-Premise Demo
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
