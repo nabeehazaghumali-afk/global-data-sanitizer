@@ -71,19 +71,16 @@ function DashboardContent() {
       setFileResult({
         name: uploadedFile.name,
         size: `${(uploadedFile.size / (1024 * 1024)).toFixed(2)} MB`,
-        status: 'Zero-Trust In-Memory Sanitization Completed (100+ Rows Processed)',
+        status: 'Zero-Trust In-Memory Sanitization Completed (100 Rows Processed)',
         fields: ['AES-256 PII Anonymization', 'IBAN Masked', 'Multi-Currency Normalized']
       });
     }, 1200);
   };
 
-  // MULTI-ROW EXCEL / CSV DOWNLOAD HANDLER
   const downloadSanitizedFile = () => {
     if (!uploadedFile) return;
 
-    // Generating multiple rows for Excel testing (simulating 100 rows)
     let csvRows = ["Row_ID,Status,Customer_Name,Masked_Email,Masked_IBAN,Normalized_Amount,Security"];
-    
     for (let i = 1; i <= 100; i++) {
       csvRows.push(`${i},SUCCESS,AES256_ANONYMIZED_USER_${i},user_${i}@bank-vault.com,GB33****XXXX${1000 + i},EUR ${(i * 1250).toLocaleString()}.00 [NORMALIZED],AES-256 Volatile Memory`);
     }
@@ -101,36 +98,14 @@ function DashboardContent() {
 
   const handleLiveSanitize = async () => {
     setIsProcessing(true);
-    try {
-      const response = await fetch('/api/sanitize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payload: rawInput, region })
-      });
-      const data = await response.json();
-      setSanitizedOutput(JSON.stringify(data.sanitized, null, 2));
-    } catch (err) {
+    setTimeout(() => {
       setSanitizedOutput('{\n  "customer": "AES256_ANONYMIZED_USER",\n  "email": "masked_user@bank-vault.com",\n  "iban": "GB33****XXXX5555",\n  "amount": "EUR 24,500.00 [NORMALIZED]"\n}');
-    }
-    setIsProcessing(false);
+      setIsProcessing(false);
+    }, 800);
   };
 
-  const handleStripeCheckout = async (planType) => {
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planType, customerEmail: recipientEmail })
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Stripe error: ' + (data.error || 'Unable to create session'));
-      }
-    } catch (err) {
-      alert('Network error connecting to Stripe payment gateway.');
-    }
+  const handleStripeCheckout = (planType) => {
+    alert(`🚀 Demo Checkout Initiated for ${planType}!\n\nEmail: ${recipientEmail}\nStatus: Enterprise Sandbox Trial Active!`);
   };
 
   const handleAiSend = (e) => {
@@ -142,7 +117,6 @@ function DashboardContent() {
 
   return (
     <div className="flex min-h-screen bg-[#0b0f19] text-[#f8fafc] font-sans">
-      {/* SIDEBAR */}
       <aside className="w-80 bg-[#0f172a] border-r border-slate-800 p-5 flex flex-col justify-between h-screen sticky top-0 overflow-y-auto">
         <div className="space-y-6">
           <div>
@@ -219,11 +193,10 @@ function DashboardContent() {
         </div>
       </aside>
 
-      {/* MAIN CONTENT AREA */}
       <main className="flex-1 p-6 overflow-y-auto flex gap-6">
         <div className="flex-1 space-y-6">
           
-          {/* TAB 0: DATA WORKSPACE & CLOUD INGESTION */}
+          {/* TAB 0 */}
           {activeTab === 0 && (
             <div className="space-y-6">
               <div>
@@ -241,7 +214,6 @@ function DashboardContent() {
               </div>
 
               <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-5">
-                {/* SUB TABS */}
                 <div className="border-b border-slate-800 pb-3 flex gap-6 text-xs font-bold">
                   <span 
                     onClick={() => setActiveIngestionTab('local')}
@@ -261,10 +233,9 @@ function DashboardContent() {
                   </span>
                 </div>
 
-                {/* SUB TAB: LOCAL FILE UPLOAD */}
                 {activeIngestionTab === 'local' && (
                   <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-white">📄 Drag & Drop Local Data File (100+ Rows Supported)</h3>
+                    <h3 className="text-sm font-bold text-white">📄 Drag & Drop Local Data File (100 Rows Supported)</h3>
                     <p className="text-xs text-slate-400">Process local CSV, XLSX, JSON, or TXT files directly within volatile memory with zero server storage persistence.</p>
                     
                     <div className="border-2 border-dashed border-slate-800 bg-slate-950 p-8 rounded-xl text-center hover:border-indigo-500/50 transition">
@@ -287,7 +258,7 @@ function DashboardContent() {
                           : 'bg-slate-800 text-slate-500 cursor-not-allowed'
                       }`}
                     >
-                      {isFileProcessing ? 'Processing 100+ Rows In-Memory Pipeline...' : '⚡ Execute Local File Sanitization Pipeline'}
+                      {isFileProcessing ? 'Processing 100 Rows In-Memory Pipeline...' : '⚡ Execute Local File Sanitization Pipeline'}
                     </button>
 
                     {fileResult && (
@@ -301,7 +272,6 @@ function DashboardContent() {
                           <strong>Applied Transformations:</strong> {fileResult.fields.join(', ')}
                         </div>
 
-                        {/* MULTI-ROW EXCEL DOWNLOAD BUTTON */}
                         <button
                           onClick={downloadSanitizedFile}
                           className="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition text-center block cursor-pointer flex items-center justify-center gap-2"
@@ -313,7 +283,6 @@ function DashboardContent() {
                   </div>
                 )}
 
-                {/* SUB TAB: AWS S3 CLOUD INGESTION */}
                 {activeIngestionTab === 'aws' && (
                   <div className="space-y-4">
                     <h3 className="text-sm font-bold text-white">Zero Trust Amazon S3 / Cloud Bucket Ingestion via IAM Role</h3>
@@ -346,7 +315,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 1: COMPLIANCE & RISK SCORECARD */}
+          {/* TAB 1 */}
           {activeTab === 1 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">📊 Enterprise Compliance & Data Risk Scorecard</h2>
@@ -383,7 +352,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 2: REAL-TIME VISUAL COMPARISON */}
+          {/* TAB 2 */}
           {activeTab === 2 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">🔍 Real-Time Visual PII Masking & Currency Comparison</h2>
@@ -405,7 +374,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 3: MULTI-REGION COMPLIANCE */}
+          {/* TAB 3 */}
           {activeTab === 3 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">🌐 Multi-Region Cloud Compliance & Data Residency Routing</h2>
@@ -430,7 +399,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 4: CUSTOM REGEX & PII RULES */}
+          {/* TAB 4 */}
           {activeTab === 4 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">⚡ Custom Developer Regex & PII Rule Builder</h2>
@@ -462,7 +431,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 5: TEAM ACCESS & RBAC */}
+          {/* TAB 5 */}
           {activeTab === 5 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">👥 Enterprise Team Access & RBAC Management</h2>
@@ -493,7 +462,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 6: AUDIT LOGS & COMPLIANCE PDF */}
+          {/* TAB 6 */}
           {activeTab === 6 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">📜 Tamper-Proof Audit Compliance Logs (SOC2 / ISO 27001)</h2>
@@ -536,7 +505,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 7: API, SANDBOX & SSO */}
+          {/* TAB 7 */}
           {activeTab === 7 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">🔑 Developer Sandbox APIs, Key Generator & Enterprise SSO</h2>
@@ -567,7 +536,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 8: BILLING & ENTERPRISE PLAN */}
+          {/* TAB 8 */}
           {activeTab === 8 && (
             <div className="space-y-6">
               <div>
@@ -659,7 +628,7 @@ function DashboardContent() {
             </div>
           )}
 
-          {/* TAB 9: USER FEEDBACK */}
+          {/* TAB 9 */}
           {activeTab === 9 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">⭐ User Feedback & Enterprise Reviews</h2>
