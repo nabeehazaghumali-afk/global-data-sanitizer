@@ -104,8 +104,23 @@ function DashboardContent() {
     }, 800);
   };
 
-  const handleStripeCheckout = (planType) => {
-    alert(`🚀 Demo Checkout Initiated for ${planType}!\n\nEmail: ${recipientEmail}\nStatus: Enterprise Sandbox Trial Active!`);
+  // UPDATED: Real Stripe Checkout Handler
+  const handleStripeCheckout = async (planType) => {
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planType, customerEmail: recipientEmail })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Checkout Error: ' + (data.error || 'Unable to connect to Stripe session.'));
+      }
+    } catch (err) {
+      alert('Network error connecting to payment gateway.');
+    }
   };
 
   const handleAiSend = (e) => {
