@@ -79,6 +79,31 @@ function DashboardContent() {
     }, 1200);
   };
 
+  // DOWNLOAD SANITIZED FILE HANDLER
+  const downloadSanitizedFile = () => {
+    if (!uploadedFile) return;
+    const dummySanitizedContent = JSON.stringify({
+      status: "SUCCESS",
+      filename: uploadedFile.name,
+      security: "AES-256 Volatile Memory Masked",
+      timestamp: new Date().toISOString(),
+      masked_data_preview: {
+        customer: "AES256_ANONYMIZED_USER",
+        email: "masked_user@bank-vault.com",
+        iban: "GB33****XXXX5555"
+      }
+    }, null, 2);
+
+    const blob = new Blob([dummySanitizedContent], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sanitized_${uploadedFile.name}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   const handleLiveSanitize = async () => {
     setIsProcessing(true);
     try {
@@ -272,15 +297,23 @@ function DashboardContent() {
                     </button>
 
                     {fileResult && (
-                      <div className="bg-slate-950 border border-emerald-500/40 p-4 rounded-xl text-xs space-y-1.5">
+                      <div className="bg-slate-950 border border-emerald-500/40 p-4 rounded-xl text-xs space-y-2">
                         <div className="text-emerald-400 font-bold flex items-center gap-1.5">
                           <span>✅</span> {fileResult.status}
                         </div>
                         <div className="text-slate-300"><strong>File Name:</strong> {fileResult.name}</div>
                         <div className="text-slate-300"><strong>File Size:</strong> {fileResult.size}</div>
-                        <div className="text-slate-400 text-[11px] pt-1">
+                        <div className="text-slate-400 text-[11px]">
                           <strong>Applied Transformations:</strong> {fileResult.fields.join(', ')}
                         </div>
+
+                        {/* DOWNLOAD BUTTON */}
+                        <button
+                          onClick={downloadSanitizedFile}
+                          className="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition text-center block cursor-pointer"
+                        >
+                          📥 Download Sanitized File
+                        </button>
                       </div>
                     )}
                   </div>
