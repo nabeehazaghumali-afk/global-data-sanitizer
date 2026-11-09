@@ -79,29 +79,24 @@ function DashboardContent() {
     }, 1200);
   };
 
-  // DOWNLOAD SANITIZED FILE HANDLER
+  // DOWNLOAD SANITIZED FILE AS EXCEL (.CSV format which opens directly in Excel)
   const downloadSanitizedFile = () => {
     if (!uploadedFile) return;
-    const dummySanitizedContent = JSON.stringify({
-      status: "SUCCESS",
-      filename: uploadedFile.name,
-      security: "AES-256 Volatile Memory Masked",
-      timestamp: new Date().toISOString(),
-      masked_data_preview: {
-        customer: "AES256_ANONYMIZED_USER",
-        email: "masked_user@bank-vault.com",
-        iban: "GB33****XXXX5555"
-      }
-    }, null, 2);
+    
+    // CSV format for Excel
+    const csvContent = "data:text/csv;charset=utf-8," + 
+      "Status,Filename,Security_Protocol,Timestamp,Customer_Field,Email_Field,IBAN_Field\n" +
+      `SUCCESS,${uploadedFile.name},AES-256 Volatile Memory Masked,${new Date().toISOString()},AES256_ANONYMIZED_USER,masked_user@bank-vault.com,GB33****XXXX5555`;
 
-    const blob = new Blob([dummySanitizedContent], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `sanitized_${uploadedFile.name}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    // Setting extension to .csv so it opens directly in Excel
+    const baseName = uploadedFile.name.substring(0, uploadedFile.name.lastIndexOf('.')) || uploadedFile.name;
+    link.setAttribute("download", `sanitized_${baseName}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleLiveSanitize = async () => {
@@ -307,12 +302,12 @@ function DashboardContent() {
                           <strong>Applied Transformations:</strong> {fileResult.fields.join(', ')}
                         </div>
 
-                        {/* DOWNLOAD BUTTON */}
+                        {/* EXCEL / CSV DOWNLOAD BUTTON */}
                         <button
                           onClick={downloadSanitizedFile}
-                          className="w-full mt-2 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition text-center block cursor-pointer"
+                          className="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition text-center block cursor-pointer flex items-center justify-center gap-2"
                         >
-                          📥 Download Sanitized File
+                          📊 Download Sanitized File (Excel / CSV Format)
                         </button>
                       </div>
                     )}
