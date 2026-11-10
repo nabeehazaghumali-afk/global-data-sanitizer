@@ -40,6 +40,3 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-```[cite: 6]
-
-Isko paste karke save karein, Vercel foran build utha lega aur error resolve ho jayega!
