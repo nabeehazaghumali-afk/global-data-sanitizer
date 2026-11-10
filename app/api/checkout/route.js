@@ -12,7 +12,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'STRIPE_SECRET_KEY is missing in Vercel Environment Variables' }, { status: 400 });
     }
 
-    const stripe = new Stripe(apiKey.trim());
+    const stripe = new Stripe(apiKey.trim(), {
+      apiVersion: '2023-10-16',
+    });
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -22,8 +24,8 @@ export async function POST(request) {
           price_data: {
             currency: 'usd',
             product_data: { 
-              name: planType,
-              description: 'Global Data Sanitization Plan'
+              name: planType || 'Professional Tier',
+              description: 'Global Data Sanitization & Compliance Plan'
             },
             unit_amount: 1900,
           },
@@ -40,3 +42,4 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+```[cite: 4]
