@@ -104,7 +104,7 @@ function DashboardContent() {
     }, 800);
   };
 
-  // UPDATED: Real Stripe Checkout Handler via Next.js API Route
+  // Real Stripe Checkout Handler connected to /api/checkout route
   const handleStripeCheckout = async (planType) => {
     try {
       const res = await fetch('/api/checkout', {
@@ -601,7 +601,7 @@ function DashboardContent() {
                     </div>
                     <button 
                       onClick={() => handleStripeCheckout('Professional 10-Day Free Trial')} 
-                      className="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-semibold text-xs rounded-xl transition shadow-lg"
+                      className="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-semibold text-xs rounded-xl transition shadow-lg cursor-pointer"
                     >
                       🚀 Start 10-Day Free Trial ($19/mo afterwards)
                     </button>
@@ -633,7 +633,7 @@ function DashboardContent() {
                   <div className="pt-6">
                     <button 
                       onClick={() => handleStripeCheckout('Enterprise Custom SLA')} 
-                      className="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
                     >
                       📞 Request Enterprise On-Premise Demo
                     </button>
