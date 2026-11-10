@@ -104,7 +104,7 @@ function DashboardContent() {
     }, 800);
   };
 
-  // UPDATED: Real Stripe Checkout Handler
+  // UPDATED: Real Stripe Checkout Handler via Next.js API Route
   const handleStripeCheckout = async (planType) => {
     try {
       const res = await fetch('/api/checkout', {
