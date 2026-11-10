@@ -9,12 +9,10 @@ export async function POST(request) {
     const apiKey = process.env.STRIPE_SECRET_KEY;
     
     if (!apiKey) {
-      return NextResponse.json({ error: 'STRIPE_SECRET_KEY is missing in Vercel Environment Variables' }, { status: 400 });
+      return NextResponse.json({ error: 'STRIPE_SECRET_KEY is missing' }, { status: 400 });
     }
 
-    const stripe = new Stripe(apiKey.trim(), {
-      apiVersion: '2023-10-16',
-    });
+    const stripe = new Stripe(apiKey.trim());
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -25,7 +23,7 @@ export async function POST(request) {
             currency: 'usd',
             product_data: { 
               name: planType || 'Professional Tier',
-              description: 'Global Data Sanitization & Compliance Plan'
+              description: 'Global Data Sanitization Plan'
             },
             unit_amount: 1900,
           },
@@ -42,4 +40,6 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-```[cite: 4]
+```[cite: 6]
+
+Isko paste karke save karein, Vercel foran build utha lega aur error resolve ho jayega!
