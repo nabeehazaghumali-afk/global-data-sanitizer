@@ -3,8 +3,9 @@ import Stripe from 'stripe';
 
 export async function POST(req) {
   try {
-    const apiKey = process.env.STRIPE_SECRET_KEY;
-    
+    const rawKey = process.env.STRIPE_SECRET_KEY || '';
+    const apiKey = rawKey.trim().replace(/^["']|["']$/g, '');
+
     if (!apiKey) {
       return NextResponse.json(
         { error: 'STRIPE_SECRET_KEY is missing in Vercel Environment Variables.' },
@@ -17,9 +18,11 @@ export async function POST(req) {
 
     const isEnterprise = planType?.includes('Enterprise');
     const unitAmount = isEnterprise ? 9900 : 1900;
-    const planName = planType || 'Professional Tier';
+    const isTrial = planType?.includes('Trial');
 
-    const session = await stripe.checkout.sessions.create({
+    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'https://global-data-sanitizer.vercel.app';
+
+    const sessionData = {
       payment_method_types: ['card'],
       customer_email: customerEmail || undefined,
       line_items: [
@@ -27,7 +30,7 @@ export async function POST(req) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `Global Enterprise Data Sanitizer - ${planName}`,
+              name: `Global Enterprise Data Sanitizer - ${planType || 'Professional Tier'}`,
               description: 'Zero-Trust In-Memory PII Masking Subscription',
             },
             unit_amount: unitAmount,
@@ -39,9 +42,17 @@ export async function POST(req) {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin') || 'https://global-data-sanitizer.vercel.app'}/?success=true`,
-      cancel_url: `${req.headers.get('origin') || 'https://global-data-sanitizer.vercel.app'}/?canceled=true`,
-    });
+      success_url: `${origin}/?success=true`,
+      cancel_url: `${origin}/?canceled=true`,
+    };
+
+    if (isTrial) {
+      sessionData.subscription_data = {
+        trial_period_days: 10,
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionData);
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
