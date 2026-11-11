@@ -1,61 +1,75 @@
 import os
-import stripe
-from fastapi import APIRouter, HTTPException, Request, Header, status
+import httpx
+from fastapi import APIRouter, HTTPException, Request, Header
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/v1/payments", tags=["Payments"])
 
-# Set live or test Stripe API key from environment variables
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-ENDPOINT_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+LEMON_SQUEEZY_API_KEY = os.getenv("LEMON_SQUEEZY_API_KEY")
+STORE_ID = os.getenv("LEMON_SQUEEZY_STORE_ID")
 
 class CheckoutSessionRequest(BaseModel):
-    price_id: str  # Stripe Price ID (e.g., price_1N...)
+    variant_id: str  # Lemon Squeezy Variant ID
     customer_email: str
     success_url: str
     cancel_url: str
 
 @router.post("/create-checkout-session")
-def create_checkout_session(payload: CheckoutSessionRequest):
-    """Creates a real Stripe Checkout Session for subscription plans."""
-    try:
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            mode="subscription",
-            customer_email=payload.customer_email,
-            line_items=[{
-                "price": payload.price_id,
-                "quantity": 1,
-            }],
-            success_url=payload.success_url,
-            cancel_url=payload.cancel_url,
-        )
-        return {"status": "SUCCESS", "checkout_url": session.url, "session_id": session.id}
-    except stripe.error.StripeError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+async def create_checkout_session(payload: CheckoutSessionRequest):
+    """Creates a Lemon Squeezy Checkout for subscription plans."""
+    url = "https://api.lemonsqueezy.com/v1/checkouts"
+    headers = {
+        "Authorization": f"Bearer {LEMON_SQUEEZY_API_KEY}",
+        "Content-Type": "application/vnd.api+json",
+        "Accept": "application/vnd.api+json"
+    }
+    
+    body = {
+        "data": {
+            "type": "checkouts",
+            "attributes": {
+                "checkout_data": {
+                    "email": payload.customer_email,
+                },
+                "product_options": {
+                    "redirect_url": payload.success_url
+                }
+            },
+            "relationships": {
+                "store": {
+                    "data": {
+                        "type": "stores",
+                        "id": str(STORE_ID)
+                    }
+                },
+                "variant": {
+                    "data": {
+                        "type": "variants",
+                        "id": str(payload.variant_id)
+                    }
+                }
+            }
+        }
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, json=body, headers=headers)
+        if response.status_code != 201:
+            raise HTTPException(status_code=400, detail=response.text)
+        
+        data = response.json()
+        checkout_url = data["data"]["attributes"]["url"]
+        return {"status": "SUCCESS", "checkout_url": checkout_url}
 
 @router.post("/webhook")
-async def stripe_webhook(request: Request, stripe_signature: str = Header(None)):
-    """Handles signed event webhooks from Stripe to activate enterprise access."""
-    payload = await request.body()
+async def lemonsqueezy_webhook(request: Request):
+    """Handles webhook events from Lemon Squeezy."""
+    payload = await request.json()
+    event_name = payload.get("meta", {}).get("event_name")
     
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, stripe_signature, ENDPOINT_SECRET
-        )
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid payload")
-    except stripe.error.SignatureVerificationError:
-        raise HTTPException(status_code=400, detail="Invalid signature")
-
-    # Handle subscription events from live Stripe server
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        customer_email = session.get("customer_email")
-        print(f"Subscription successfully activated for: {customer_email}")
-        
-    elif event['type'] == 'customer.subscription.deleted':
-        session = event['data']['object']
-        print(f"Subscription canceled for customer.")
+    if event_name == "subscription_created":
+        print("Subscription successfully created!")
+    elif event_name == "subscription_cancelled":
+        print("Subscription canceled for customer.")
 
     return {"status": "SUCCESS"}
