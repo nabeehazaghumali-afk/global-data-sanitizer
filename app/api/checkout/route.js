@@ -1,65 +1,103 @@
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
 
-export async function POST(req) {
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+function readLemonApiKey() {
+  return (process.env.LEMON_SQUEEZY_API_KEY || '')
+    .replace(/^\uFEFF/, '')
+    .trim()
+    .replace(/^['"]+|['"]+$/g, '')
+    .replace(/\s+/g, '');
+}
+
+function appOrigin(request) {
+  const headerOrigin = request.headers.get('origin');
+  const configured = (process.env.NEXT_PUBLIC_APP_URL || '').trim();
+  const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  const raw = headerOrigin || configured || (vercelHost ? `https://${vercelHost}` : '');
+  const origin = raw.trim().replace(/\/+$/, '');
+  if (!/^https?:\/\//i.test(origin)) return '';
+  return origin;
+}
+
+export async function POST(request) {
   try {
-    const rawKey = process.env.STRIPE_SECRET_KEY || '';
-    const apiKey = rawKey.trim().replace(/^["']|["']$/g, '');
+    const body = await request.json().catch(() => ({}));
+    const planType =
+      typeof body.planType === 'string' && body.planType.trim()
+        ? body.planType.trim()
+        : 'Professional Tier';
+    const customerEmail =
+      typeof body.customerEmail === 'string' ? body.customerEmail.trim() : '';
 
-    if (!apiKey) {
+    const apiKey = readLemonApiKey();
+    const storeId = process.env.LEMON_SQUEEZY_STORE_ID;
+    
+    if (!apiKey || !storeId) {
       return NextResponse.json(
-        { error: 'STRIPE_SECRET_KEY is missing in Vercel Environment Variables.' },
+        { error: 'Lemon Squeezy API Key or Store ID is missing in environment variables.' },
         { status: 500 }
       );
     }
 
-    const stripe = new Stripe(apiKey);
-    const { planType, customerEmail } = await req.json();
-
-    const isEnterprise = planType?.includes('Enterprise');
-    const unitAmount = isEnterprise ? 9900 : 1900;
-    const isTrial = planType?.includes('Trial');
-
-    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'https://global-data-sanitizer.vercel.app';
-
-    const sessionData = {
-      payment_method_types: ['card'],
-      customer_email: customerEmail || undefined,
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `Global Enterprise Data Sanitizer - ${planType || 'Professional Tier'}`,
-              description: 'Zero-Trust In-Memory PII Masking Subscription',
-            },
-            unit_amount: unitAmount,
-            recurring: {
-              interval: 'month',
-            },
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'subscription',
-      success_url: `${origin}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/?canceled=true`,
-    };
-
-    if (isTrial) {
-      sessionData.subscription_data = {
-        trial_period_days: 10,
-      };
+    const origin = appOrigin(request);
+    if (!origin) {
+      return NextResponse.json(
+        { error: 'Checkout redirect URL is missing. Set NEXT_PUBLIC_APP_URL.' },
+        { status: 500 }
+      );
     }
 
-    const session = await stripe.checkout.sessions.create(sessionData);
+    // Map your plans to Lemon Squeezy Variant IDs (replace with your actual variant IDs from dashboard)
+    const isEnterprise = planType.includes('Enterprise');
+    const variantId = isEnterprise 
+      ? process.env.LEMON_SQUEEZY_ENTERPRISE_VARIANT_ID 
+      : process.env.LEMON_SQUEEZY_PRO_VARIANT_ID;
 
-    return NextResponse.json({ url: session.url });
+    const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/vnd.api+json',
+        'Accept': 'application/vnd.api+json',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'checkouts',
+          attributes: {
+            checkout_data: {
+              email: customerEmail || undefined,
+            },
+            product_options: {
+              redirect_url: `${origin}/?success=true`,
+            },
+          },
+          relationships: {
+            store: {
+              data: { type: 'stores', id: String(storeId) },
+            },
+            variant: {
+              data: { type: 'variants', id: String(variantId) },
+            },
+          },
+        },
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.errors?.[0]?.detail || 'Lemon Squeezy checkout failed');
+    }
+
+    const checkoutUrl = data.data?.attributes?.url;
+    if (!checkoutUrl) {
+      return NextResponse.json({ error: 'Lemon Squeezy did not return a checkout URL.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ url: checkoutUrl });
   } catch (error) {
-    console.error('Stripe Checkout Route Error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Stripe connection failed.' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Checkout failed';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
