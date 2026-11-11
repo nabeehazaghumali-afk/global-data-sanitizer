@@ -42,7 +42,7 @@ export async function POST(req) {
         },
       ],
       mode: 'subscription',
-      success_url: `${origin}/?success=true`,
+      success_url: `${origin}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?canceled=true`,
     };
 
